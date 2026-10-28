@@ -1,0 +1,3840 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>SEOUL CHICK — Haqiqiy Koreyscha Qarsildoq Tovuq | Amir Temur, Toshkent</title>
+  
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- Firebase v10 Compat CDN & Database Module -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+
+  <!-- Google Fonts: Outfit & Plus Jakarta Sans & Noto Sans KR -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@700;900&display=swap" rel="stylesheet">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23FFFFFF' stroke='%23FF5722' stroke-width='4'/%3E%3Ctext x='50' y='55' font-family='sans-serif' font-weight='900' font-size='24' fill='%23FF5722' text-anchor='middle'%3ESC%3C/text%3E%3C/svg%3E">
+
+  <style>
+    /* ==========================================================================
+       VARIABLES & THEME SYSTEM (PREMIUM CYBER STREETFOOD DARK)
+       ========================================================================== */
+    :root {
+      --bg-black: #0B0B0B;
+      --bg-dark: #0E0E12;
+      --bg-surface: #14141A;
+      --bg-card: rgba(24, 24, 32, 0.88);
+      --bg-card-hover: rgba(32, 32, 44, 0.98);
+      
+      --accent-red: #EF4444;
+      --accent-red-glow: rgba(239, 68, 68, 0.45);
+      
+      --accent-orange: #FF5722;
+      --accent-orange-light: #FF7043;
+      --accent-orange-glow: rgba(255, 87, 34, 0.45);
+      
+      --accent-amber: #F59E0B;
+      --accent-amber-light: #FBBF24;
+      --accent-amber-glow: rgba(245, 158, 11, 0.4);
+      
+      --text-main: #FFFFFF;
+      --text-muted: #9CA3AF;
+      --text-dim: #6B7280;
+      
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-card: rgba(255, 255, 255, 0.12);
+      --border-focus: rgba(255, 87, 34, 0.75);
+      
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+      
+      --shadow-card: 0 14px 34px rgba(0, 0, 0, 0.6);
+      --shadow-glow: 0 0 25px rgba(255, 87, 34, 0.35);
+
+      --font-display: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      line-height: 1.5;
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+      padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* ==========================================================================
+       REQUIREMENT 1: INTRO / PRELOADER (CINEMATIC SMOOTH DRIFT & FADE)
+       ========================================================================== */
+    .preloader {
+      position: fixed;
+      inset: 0;
+      background-color: var(--bg-black);
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.65s ease;
+    }
+
+    .preloader.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .preloader-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      animation: preloaderDrift 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes preloaderDrift {
+      0% {
+        opacity: 0;
+        transform: translateY(22px) scale(0.90);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1.0);
+      }
+    }
+
+    .preloader-logo-ring {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      padding: 4px;
+      box-shadow: 0 0 50px rgba(255, 87, 34, 0.55), 0 0 25px rgba(245, 158, 11, 0.35);
+      border: 3px solid transparent;
+      background-image: linear-gradient(#FFFFFF, #FFFFFF), linear-gradient(135deg, #E50914, #FF9900);
+      background-origin: border-box;
+      background-clip: content-box, border-box;
+    }
+
+    .preloader-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      color: #FFFFFF;
+    }
+
+    .preloader-title span {
+      color: var(--accent-orange);
+    }
+
+    .preloader-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .preloader-bar-track {
+      width: 140px;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .preloader-bar-fill {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, #E50914, #FF9900);
+      animation: preloaderBar 1.1s ease-in-out infinite;
+    }
+
+    @keyframes preloaderBar {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* Ambient background pattern */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: 
+        url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23FF5722' fill-opacity='0.035'%3E%3Cpath d='M25 15c-4 0-8 3-8 7 0 3 2 6 5 7l2 8c0 1 1 2 2 2h4c1 0 2-1 2-2l2-8c3-1 5-4 5-7 0-4-4-7-8-7zm0 4c2 0 4 2 4 4s-2 4-4 4-4-2-4-4 2-4 4-4z'/%3E%3Cpath d='M85 20c-5 0-9 4-8 9 1 6 6 12 11 15 2 1 4 0 4-2s-1-4-2-6c3-1 5-4 5-7 0-5-4-9-10-9z'/%3E%3Ccircle cx='60' cy='30' r='2'/%3E%3Ccircle cx='63' cy='32' r='1.5'/%3E%3Ccircle cx='10' cy='80' r='2'/%3E%3Ccircle cx='15' cy='84' r='1.5'/%3E%3Cpath d='M100 80l2 4 4 2-4 2-2 4-2-4-4-2 4-2z'/%3E%3Cpath d='M30 95l1.5 3 3 1.5-3 1.5-1.5 3-1.5-3-3-1.5 3-1.5z'/%3E%3Ccircle cx='75' cy='100' r='3' fill='none' stroke='%23FF5722' stroke-opacity='0.04' stroke-width='1.5'/%3E%3C/g%3E%3C/svg%3E"),
+        radial-gradient(circle at 15% 15%, rgba(255, 87, 34, 0.14) 0%, transparent 45%),
+        radial-gradient(circle at 85% 30%, rgba(245, 158, 11, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 50% 60%, rgba(239, 68, 68, 0.09) 0%, transparent 50%);
+      background-size: 120px 120px, 100% 100%, 100% 100%, 100% 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font-family: inherit;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      background: none;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    @media (min-width: 768px) {
+      .container {
+        padding: 0 24px;
+      }
+    }
+
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255, 87, 34, 0.35) 25%, rgba(245, 158, 11, 0.45) 50%, rgba(255, 87, 34, 0.35) 75%, transparent 100%);
+      margin: 36px 0;
+      box-shadow: 0 0 16px rgba(255, 87, 34, 0.2);
+    }
+
+    /* ==========================================================================
+       HEADER (CLEAN, MINIMALIST, SINGLE BRANCH: AMIR TEMUR)
+       ========================================================================== */
+    .site-header {
+      position: sticky;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(14, 14, 18, 0.94);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+      gap: 12px;
+    }
+
+    .brand-logo-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .brand-logo-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px;
+      box-shadow: 0 0 20px var(--accent-orange-glow), 0 4px 12px rgba(0,0,0,0.6);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      flex-shrink: 0;
+    }
+
+    .brand-logo-wrap:hover .brand-logo-circle {
+      transform: scale(1.08) rotate(-4deg);
+    }
+
+    .brand-logo-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .brand-text-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-name {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .brand-name-red { color: #E50914; text-shadow: 0 0 14px rgba(229, 9, 20, 0.45); }
+    .brand-name-orange { color: #FF9900; text-shadow: 0 0 14px rgba(255, 153, 0, 0.45); }
+
+    .brand-sub {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* Single Branch Pill in Header (Amir Temur) */
+    .header-branch-pill {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-full);
+      padding: 7px 14px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #FFFFFF;
+    }
+
+    @media (min-width: 860px) {
+      .header-branch-pill {
+        display: inline-flex;
+      }
+    }
+
+    .branch-live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10B981;
+      box-shadow: 0 0 8px #10B981;
+      animation: livePulse 2s infinite ease-in-out;
+    }
+
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.2); }
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    @media (min-width: 640px) {
+      .header-actions {
+        gap: 12px;
+      }
+    }
+
+    .btn-header-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      border-radius: var(--radius-full);
+      font-size: 0.82rem;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      transition: all 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .btn-header-action:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .btn-call {
+      color: #FFB300;
+      border-color: rgba(255, 179, 0, 0.3);
+      background: rgba(255, 179, 0, 0.08);
+    }
+
+    .btn-instagram {
+      color: #FF4081;
+      border-color: rgba(255, 64, 129, 0.3);
+      background: rgba(255, 64, 129, 0.08);
+    }
+
+    .btn-cart-desktop {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));
+      color: #FFFFFF;
+      padding: 9px 18px;
+      border-radius: var(--radius-full);
+      font-weight: 800;
+      font-size: 0.88rem;
+      box-shadow: 0 4px 18px var(--accent-orange-glow);
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .btn-cart-desktop:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px var(--accent-orange-glow);
+      filter: brightness(1.08);
+    }
+
+    @media (min-width: 768px) {
+      .btn-cart-desktop {
+        display: inline-flex;
+      }
+    }
+
+    .badge-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #FFFFFF;
+      color: var(--accent-orange);
+      font-size: 0.72rem;
+      font-weight: 800;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      line-height: 1;
+      animation: badgePulse 2s infinite ease-in-out;
+    }
+
+    @keyframes badgePulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+
+    /* ==========================================================================
+       REQUIREMENT 2: HERO SECTION (CINEMATIC BACKGROUND & TONING)
+       ========================================================================== */
+    .hero-section {
+      position: relative;
+      padding: 60px 0 80px;
+      overflow: hidden;
+      background: 
+        linear-gradient(180deg, rgba(14, 14, 18, 0.82) 0%, rgba(14, 14, 18, 0.90) 65%, #0E0E12 100%),
+        radial-gradient(circle at 75% 40%, rgba(255, 87, 34, 0.25) 0%, transparent 60%),
+        url('assets/seoul-chick-thighs.jpg') center center / cover no-repeat;
+    }
+
+    @media (min-width: 992px) {
+      .hero-section {
+        padding: 90px 0 110px;
+      }
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 36px;
+      align-items: center;
+    }
+
+    @media (min-width: 992px) {
+      .hero-grid {
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 48px;
+      }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      animation: heroContentFadeIn 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes heroContentFadeIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-badges-top {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .pill-badge-halal {
+      background: rgba(16, 185, 129, 0.16);
+      color: #34D399;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    .pill-badge-sauces {
+      background: rgba(255, 87, 34, 0.16);
+      color: #FF7043;
+      border: 1px solid rgba(255, 87, 34, 0.35);
+    }
+
+    .pill-badge-tashkent {
+      background: rgba(245, 158, 11, 0.16);
+      color: #FBBF24;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: 2.3rem;
+      font-weight: 900;
+      line-height: 1.12;
+      letter-spacing: -0.03em;
+      margin-bottom: 18px;
+      color: #FFFFFF;
+    }
+
+    @media (min-width: 640px) {
+      .hero-title {
+        font-size: 3rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .hero-title {
+        font-size: 3.6rem;
+      }
+    }
+
+    .hero-title-highlight {
+      background: linear-gradient(135deg, #FF5722 0%, #F59E0B 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 35px rgba(255, 87, 34, 0.45);
+      display: inline;
+    }
+
+    .hero-desc {
+      font-size: 1.08rem;
+      color: #D1D5DB;
+      margin-bottom: 28px;
+      max-width: 560px;
+      line-height: 1.65;
+    }
+
+    .hero-desc strong {
+      color: #FFFFFF;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));
+      color: #FFFFFF;
+      font-weight: 800;
+      font-size: 1.02rem;
+      padding: 15px 30px;
+      border-radius: var(--radius-full);
+      box-shadow: 0 8px 25px var(--accent-orange-glow);
+      transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 12px 32px rgba(255, 87, 34, 0.6);
+      filter: brightness(1.1);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.95);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-card);
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 0.98rem;
+      padding: 15px 26px;
+      border-radius: var(--radius-full);
+      backdrop-filter: blur(10px);
+      transition: all 0.25s ease;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary:active {
+      transform: scale(0.95);
+    }
+
+    .hero-stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-subtle);
+      max-width: 520px;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-val {
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 1.3rem;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stat-val-amber {
+      color: var(--accent-amber-light);
+    }
+
+    .stat-lbl {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* Hero Visual Card (Reference photo 2: wings) */
+    .hero-visual {
+      position: relative;
+    }
+
+    .hero-card-frame {
+      position: relative;
+      border-radius: 28px;
+      padding: 10px;
+      background: linear-gradient(145deg, rgba(255, 87, 34, 0.4), rgba(245, 158, 11, 0.25), rgba(24, 24, 32, 0.95));
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(255, 87, 34, 0.3);
+    }
+
+    .hero-img-box {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      background: #18181f;
+    }
+
+    .hero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .hero-card-frame:hover .hero-img {
+      transform: scale(1.04);
+    }
+
+    .hero-img-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(14, 14, 18, 0.92) 100%);
+      pointer-events: none;
+    }
+
+    .hero-float-badge {
+      position: absolute;
+      background: rgba(18, 18, 25, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      z-index: 3;
+      animation: floatBadge 4s ease-in-out infinite alternate;
+    }
+
+    .hero-float-badge-1 { top: 16px; left: 16px; }
+    .hero-float-badge-2 { bottom: 20px; right: 20px; animation-delay: -2s; }
+
+    @keyframes floatBadge {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-8px); }
+    }
+
+    .float-icon { font-size: 1.5rem; line-height: 1; }
+    .float-text-title { font-weight: 800; font-size: 0.85rem; color: #FFFFFF; line-height: 1.2; }
+    .float-text-sub { font-size: 0.72rem; color: var(--accent-amber-light); font-weight: 600; }
+
+    /* ==========================================================================
+       CATEGORY TABS & SEARCH
+       ========================================================================== */
+    .category-nav-sticky {
+      position: sticky;
+      top: 70px;
+      z-index: 90;
+      background: rgba(14, 14, 18, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 0;
+    }
+
+    .categories-scroll {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding: 2px 0;
+    }
+
+    .categories-scroll::-webkit-scrollbar { display: none; }
+
+    .category-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 18px;
+      border-radius: var(--radius-full);
+      font-size: 0.86rem;
+      font-weight: 700;
+      white-space: nowrap;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      transition: all 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+      cursor: pointer;
+    }
+
+    .category-pill:hover {
+      color: #FFFFFF;
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .category-pill.active {
+      color: #FFFFFF;
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));
+      border-color: var(--accent-orange);
+      box-shadow: 0 4px 18px var(--accent-orange-glow);
+    }
+
+    .menu-filter-bar {
+      margin: 22px 0 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      min-width: 260px;
+    }
+
+    .search-input {
+      width: 100%;
+      background: rgba(24, 24, 32, 0.88);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-full);
+      padding: 12px 20px 12px 46px;
+      font-size: 0.9rem;
+      color: #FFFFFF;
+      outline: none;
+      transition: all 0.25s ease;
+      font-family: inherit;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-orange);
+      box-shadow: 0 0 16px var(--accent-orange-glow);
+      background: rgba(30, 30, 42, 0.98);
+    }
+
+    .search-input::placeholder { color: var(--text-dim); }
+
+    .search-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      pointer-events: none;
+    }
+
+    .menu-filter-info { font-size: 0.85rem; color: var(--text-muted); }
+    .menu-filter-info span { color: var(--accent-amber-light); font-weight: 700; }
+
+    /* ==========================================================================
+       REQUIREMENT 6: SAUCE COATING EXPLANATION BANNER
+       ========================================================================== */
+    .sauce-coating-banner {
+      background: linear-gradient(145deg, rgba(255, 87, 34, 0.16), rgba(245, 158, 11, 0.12));
+      border: 1px solid rgba(255, 87, 34, 0.35);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      margin: 16px 0 32px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      align-items: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    @media (min-width: 768px) {
+      .sauce-coating-banner {
+        grid-template-columns: 1.25fr 1.75fr;
+        padding: 26px;
+      }
+    }
+
+    .sauce-coating-title {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sauce-coating-desc {
+      font-size: 0.86rem;
+      color: #D1D5DB;
+      line-height: 1.5;
+    }
+
+    .sauce-coating-desc strong {
+      color: var(--accent-amber-light);
+    }
+
+    .sauce-badges-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .sauce-item-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      border-radius: var(--radius-full);
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: rgba(18, 18, 25, 0.94);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #FFFFFF;
+      transition: transform 0.2s ease;
+    }
+
+    .sauce-item-badge:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent-orange);
+    }
+
+    .sauce-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    /* ==========================================================================
+       MENU SECTIONS & DISH CARDS (PREMIUM FLUID MOTIONS)
+       ========================================================================== */
+    .menu-section {
+      padding: 18px 0 36px;
+      scroll-margin-top: 130px;
+      animation: fadeInUp 0.45s ease both;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-header {
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 12px;
+    }
+
+    .section-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-icon { font-size: 1.6rem; line-height: 1; }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: -0.02em;
+    }
+
+    .section-subtitle {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    @media (min-width: 640px) {
+      .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .cards-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+    }
+
+    /* Requirement 3: Card hover zoom and soft glow */
+    .dish-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+      box-shadow: var(--shadow-card);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .dish-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(255, 87, 34, 0.55);
+      box-shadow: 0 20px 35px -10px rgba(255, 87, 34, 0.32), 0 0 20px rgba(245, 158, 11, 0.16);
+      background: var(--bg-card-hover);
+    }
+
+    .card-img-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/10;
+      background: #14141C;
+      overflow: hidden;
+    }
+
+    .card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .dish-card:hover .card-img {
+      transform: scale(1.03);
+    }
+
+    .card-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(14, 14, 18, 0.88);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #FFFFFF;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 5px 10px;
+      border-radius: var(--radius-full);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+      z-index: 2;
+      animation: badgeSway 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes badgeSway {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-3px); }
+    }
+
+    .card-badge.badge-hot {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.95), rgba(220, 38, 38, 0.95));
+      border-color: var(--accent-red);
+      color: #FFFFFF;
+      box-shadow: 0 2px 10px var(--accent-red-glow);
+    }
+
+    .card-badge.badge-cheese {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.95), rgba(217, 119, 6, 0.95));
+      border-color: var(--accent-amber);
+      color: #000000;
+      box-shadow: 0 2px 10px var(--accent-amber-glow);
+    }
+
+    .card-content {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    @media (min-width: 768px) {
+      .card-content { padding: 18px; }
+    }
+
+    .card-header-line {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .dish-name {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      line-height: 1.25;
+    }
+
+    .dish-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-bottom: 14px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .combo-items-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 12px;
+    }
+
+    .combo-pill-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #FBBF24;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.28);
+      border-radius: var(--radius-sm);
+      padding: 3px 7px;
+    }
+
+    .dish-variants-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .variant-chip {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 3px 8px;
+    }
+
+    .card-footer {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .price-block { display: flex; flex-direction: column; }
+    .price-prefix { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; font-weight: 600; letter-spacing: 0.04em; }
+
+    .price-amount {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--accent-amber-light);
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    .btn-add-cart {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));
+      color: #FFFFFF;
+      font-size: 0.82rem;
+      font-weight: 800;
+      padding: 10px 16px;
+      border-radius: var(--radius-full);
+      box-shadow: 0 4px 14px var(--accent-orange-glow);
+      transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+      white-space: nowrap;
+    }
+
+    .btn-add-cart:hover {
+      filter: brightness(1.12);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px var(--accent-orange-glow);
+    }
+
+    .btn-add-cart:active { transform: scale(0.94); }
+
+    /* ==========================================================================
+       REQUIREMENT 8: SINGLE BRANCH SECTION (AMIR TEMUR ONLY)
+       ========================================================================== */
+    .branch-section-single {
+      padding: 40px 0 50px;
+      scroll-margin-top: 130px;
+    }
+
+    .single-branch-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      box-shadow: var(--shadow-card);
+      backdrop-filter: blur(14px);
+    }
+
+    @media (min-width: 860px) {
+      .single-branch-box {
+        grid-template-columns: 1.1fr 0.9fr;
+        padding: 32px;
+      }
+    }
+
+    .single-branch-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .single-branch-title {
+      font-family: var(--font-display);
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #FFFFFF;
+    }
+
+    .single-branch-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #34D399;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      white-space: nowrap;
+    }
+
+    .single-branch-details {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .single-branch-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .single-branch-row strong { color: #FFFFFF; }
+
+    .single-branch-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .map-single-wrapper {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+      position: relative;
+      min-height: 240px;
+      background: #111116;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .map-grid-layer {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        radial-gradient(circle at 50% 50%, rgba(255, 87, 34, 0.18) 0%, transparent 60%),
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+      background-size: 100% 100%, 28px 28px, 28px 28px;
+    }
+
+    .map-single-marker {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: markerBounce 2s infinite ease-in-out;
+    }
+
+    @keyframes markerBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .single-marker-pill {
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));
+      color: #FFFFFF;
+      font-size: 0.82rem;
+      font-weight: 800;
+      padding: 7px 16px;
+      border-radius: var(--radius-full);
+      box-shadow: 0 4px 18px var(--accent-orange-glow);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .single-marker-arrow {
+      width: 0; height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 8px solid var(--accent-orange);
+    }
+
+    /* ==========================================================================
+       FLOATING CART BAR & MODALS
+       ========================================================================== */
+    .floating-cart-bar {
+      position: fixed;
+      bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+      left: 14px;
+      right: 14px;
+      max-width: 600px;
+      margin: 0 auto;
+      z-index: 95;
+      background: rgba(18, 18, 25, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 87, 34, 0.45);
+      border-radius: var(--radius-full);
+      padding: 8px 12px 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.75), 0 0 25px rgba(255, 87, 34, 0.3);
+      transform: translateY(140%);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .floating-cart-bar.visible {
+      transform: translateY(0);
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .float-cart-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .float-cart-icon-wrap {
+      position: relative;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      box-shadow: 0 4px 14px var(--accent-orange-glow);
+    }
+
+    .float-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: #FFFFFF;
+      color: var(--accent-orange);
+      font-size: 0.7rem;
+      font-weight: 900;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #121218;
+    }
+
+    .float-cart-info { display: flex; flex-direction: column; }
+    .float-cart-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+    .float-cart-total { font-family: var(--font-display); font-size: 1.15rem; font-weight: 900; color: #FFFFFF; line-height: 1.1; }
+
+    .btn-float-checkout {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #FF9900, #E65100);
+      color: #000000;
+      font-weight: 800;
+      font-size: 0.9rem;
+      padding: 10px 20px;
+      border-radius: var(--radius-full);
+      box-shadow: 0 4px 14px var(--accent-amber-glow);
+      transition: all 0.2s ease;
+    }
+
+    .btn-float-checkout:hover { filter: brightness(1.1); transform: scale(1.02); }
+    .btn-float-checkout:active { transform: scale(0.96); }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      z-index: 200;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    @media (min-width: 640px) {
+      .modal-overlay {
+        align-items: center;
+        padding: 20px;
+      }
+    }
+
+    .modal-overlay.active { opacity: 1; visibility: visible; }
+
+    .modal-sheet {
+      background: #15151E;
+      border: 1px solid var(--border-card);
+      border-radius: 24px 24px 0 0;
+      width: 100%;
+      max-width: 560px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.85), 0 0 30px rgba(255, 87, 34, 0.25);
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.32, 1, 0.23, 1);
+    }
+
+    @media (min-width: 640px) {
+      .modal-sheet {
+        border-radius: 24px;
+        transform: translateY(30px) scale(0.96);
+      }
+    }
+
+    .modal-overlay.active .modal-sheet { transform: translateY(0) scale(1); }
+
+    .modal-header {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      position: relative;
+    }
+
+    .modal-drag-indicator {
+      width: 40px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    @media (min-width: 640px) { .modal-drag-indicator { display: none; } }
+
+    .modal-title { font-family: var(--font-display); font-size: 1.25rem; font-weight: 800; color: #FFFFFF; }
+
+    .btn-close-modal {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-close-modal:hover { background: rgba(255, 255, 255, 0.15); color: #FFFFFF; }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex-grow: 1;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .modal-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border-subtle);
+      background: rgba(16, 16, 22, 0.96);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .option-group-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .option-group-title .required-tag {
+      font-size: 0.7rem;
+      color: var(--accent-orange);
+      font-weight: 700;
+      background: rgba(255, 87, 34, 0.15);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .option-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .option-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .option-card.selected {
+      background: rgba(255, 87, 34, 0.16);
+      border-color: var(--accent-orange);
+      box-shadow: 0 0 14px rgba(255, 87, 34, 0.3);
+    }
+
+    .option-left { display: flex; align-items: center; gap: 10px; }
+
+    .radio-circle {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--text-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .option-card.selected .radio-circle { border-color: var(--accent-orange); }
+
+    .radio-circle::after {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-orange);
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.2s ease;
+    }
+
+    .option-card.selected .radio-circle::after { opacity: 1; transform: scale(1); }
+
+    .option-name { font-size: 0.9rem; font-weight: 700; color: #FFFFFF; }
+    .option-desc { font-size: 0.75rem; color: var(--text-muted); }
+    .option-price { font-family: var(--font-display); font-weight: 800; font-size: 0.95rem; color: var(--accent-amber-light); }
+
+    .quantity-control {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      padding: 4px;
+    }
+
+    .btn-qty {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+      transition: all 0.18s ease;
+    }
+
+    .btn-qty:hover { background: rgba(255, 255, 255, 0.2); }
+    .btn-qty:active { transform: scale(0.9); }
+
+    .qty-number {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1rem;
+      min-width: 34px;
+      text-align: center;
+      color: #FFFFFF;
+    }
+
+    .btn-remove-item {
+      color: #EF4444;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+      margin-left: 6px;
+    }
+
+    .btn-remove-item:hover {
+      background: rgba(239, 68, 68, 0.25);
+      border-color: #EF4444;
+      transform: scale(1.06);
+    }
+
+    .cart-items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .cart-item-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .cart-item-thumb {
+      width: 54px;
+      height: 54px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      flex-shrink: 0;
+      background: #181820;
+    }
+
+    .cart-item-details { flex-grow: 1; min-width: 0; }
+    .cart-item-title { font-weight: 700; font-size: 0.9rem; color: #FFFFFF; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cart-item-meta { font-size: 0.75rem; color: var(--accent-amber-light); margin: 2px 0 4px; line-height: 1.3; }
+    .cart-item-price { font-family: var(--font-display); font-weight: 800; font-size: 0.9rem; color: #FFFFFF; }
+
+    .empty-cart-state { text-align: center; padding: 40px 20px; }
+    .empty-icon { font-size: 3.5rem; margin-bottom: 12px; filter: drop-shadow(0 0 15px rgba(255, 87, 34, 0.3)); }
+    .empty-title { font-family: var(--font-display); font-size: 1.3rem; font-weight: 800; color: #FFFFFF; margin-bottom: 6px; }
+    .empty-sub { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+
+    .checkout-form-section {
+      background: rgba(0, 0, 0, 0.28);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .form-section-title {
+      font-size: 0.85rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #FFFFFF;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .delivery-toggle-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px;
+      border-radius: var(--radius-full);
+      margin-bottom: 14px;
+    }
+
+    .delivery-toggle-btn {
+      padding: 8px 12px;
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .delivery-toggle-btn.active {
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));
+      color: #FFFFFF;
+      box-shadow: 0 2px 10px var(--accent-orange-glow);
+    }
+
+    .form-group { margin-bottom: 12px; }
+    .form-label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; }
+
+    .form-input, .form-textarea {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      color: #FFFFFF;
+      outline: none;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+
+    .form-input:focus, .form-textarea:focus {
+      border-color: var(--accent-orange);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 12px rgba(255, 87, 34, 0.3);
+    }
+
+    .form-textarea { resize: none; height: 64px; }
+
+    .order-summary-box { border-top: 1px solid var(--border-subtle); padding-top: 14px; margin-top: 14px; }
+    .summary-line { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; }
+
+    .summary-line.total {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #FFFFFF;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border-subtle);
+    }
+
+    .summary-line.total .price { color: var(--accent-amber-light); font-family: var(--font-display); }
+
+    .btn-submit-order {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #0088CC, #006699);
+      color: #FFFFFF;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.05rem;
+      padding: 15px 24px;
+      border-radius: var(--radius-full);
+      box-shadow: 0 6px 20px rgba(0, 136, 204, 0.4);
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+
+    .btn-submit-order:hover { filter: brightness(1.1); transform: translateY(-2px); box-shadow: 0 8px 26px rgba(0, 136, 204, 0.6); }
+    .btn-submit-order:active { transform: scale(0.96); }
+
+    .site-footer {
+      border-top: 1px solid var(--border-subtle);
+      background: rgba(14, 14, 18, 0.95);
+      padding: 30px 0 20px;
+      margin-top: 20px;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+    }
+
+    .footer-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      text-align: center;
+    }
+
+    @media (min-width: 640px) {
+      .footer-inner { flex-direction: row; text-align: left; }
+    }
+
+    .toast-notification {
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-30px);
+      background: rgba(22, 22, 30, 0.96);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--accent-orange);
+      color: #FFFFFF;
+      padding: 10px 20px;
+      border-radius: var(--radius-full);
+      font-size: 0.88rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 16px var(--accent-orange-glow);
+      z-index: 300;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .toast-notification.active { transform: translateX(-50%) translateY(0); opacity: 1; visibility: visible; }
+
+    .success-content { text-align: center; padding: 24px 16px; }
+    .success-icon-wrap {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: rgba(16, 185, 129, 0.15); border: 2px solid #10B981;
+      color: #10B981; font-size: 2rem; display: flex; align-items: center;
+      justify-content: center; margin: 0 auto 16px; box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
+    }
+
+    .receipt-preview-box {
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      text-align: left;
+      font-family: monospace;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      color: var(--text-muted);
+      margin: 16px 0;
+      max-height: 180px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       REQUIREMENT 1: INTRO / PRELOADER SCREEN
+       ========================================================================== -->
+  <div id="preloader" class="preloader">
+    <div class="preloader-content">
+      <div class="preloader-logo-ring">
+        <svg class="brand-logo-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="preGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#E50914"/>
+              <stop offset="50%" stop-color="#FF5722"/>
+              <stop offset="100%" stop-color="#FF9900"/>
+            </linearGradient>
+          </defs>
+          <circle cx="100" cy="100" r="94" fill="#FFFFFF" stroke="url(#preGrad)" stroke-width="6"/>
+          <text x="24" y="80" font-family="'Outfit', sans-serif" font-weight="900" font-size="34" fill="#B71C1C" letter-spacing="0.3">SEOUL</text>
+          <text x="24" y="114" font-family="'Outfit', sans-serif" font-weight="900" font-size="33" fill="#E65100" letter-spacing="0.3">CHICK</text>
+          <g transform="translate(132, 50)">
+            <rect x="0" y="0" width="45" height="65" rx="8" fill="none" stroke="#B71C1C" stroke-width="3.5"/>
+            <text x="22.5" y="28" font-family="'Noto Sans KR', sans-serif" font-weight="900" font-size="26" fill="#B71C1C" text-anchor="middle">人</text>
+            <text x="22.5" y="54" font-family="'Noto Sans KR', sans-serif" font-weight="900" font-size="24" fill="#B71C1C" text-anchor="middle">ㅊ</text>
+          </g>
+          <text x="100" y="142" font-family="'Outfit', sans-serif" font-weight="700" font-size="14.5" fill="#6B1A12" text-anchor="middle">Korean street food</text>
+        </svg>
+      </div>
+      <div class="preloader-title">SEOUL <span>CHICK</span></div>
+      <div class="preloader-subtitle">Korean street food • Amir Temur</div>
+      <div class="preloader-bar-track">
+        <div class="preloader-bar-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       HEADER
+       ========================================================================== -->
+  <header class="site-header">
+    <div class="container">
+      <div class="header-inner">
+        
+        <!-- Logo -->
+        <a href="#hero" class="brand-logo-wrap" title="SEOUL CHICK Tashkent">
+          <div class="brand-logo-circle">
+            <svg class="brand-logo-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="logoCircleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#E50914"/>
+                  <stop offset="45%" stop-color="#FF5722"/>
+                  <stop offset="100%" stop-color="#FF9900"/>
+                </linearGradient>
+              </defs>
+              <circle cx="100" cy="100" r="94" fill="#FFFFFF" stroke="url(#logoCircleGrad)" stroke-width="6"/>
+              <text x="24" y="80" font-family="'Outfit', 'Montserrat', sans-serif" font-weight="900" font-size="34" fill="#B71C1C" letter-spacing="0.3">SEOUL</text>
+              <text x="24" y="114" font-family="'Outfit', 'Montserrat', sans-serif" font-weight="900" font-size="33" fill="#E65100" letter-spacing="0.3">CHICK</text>
+              
+              <g transform="translate(132, 50)">
+                <rect x="0" y="0" width="45" height="65" rx="8" fill="none" stroke="#B71C1C" stroke-width="3.5"/>
+                <text x="22.5" y="28" font-family="'Noto Sans KR', sans-serif" font-weight="900" font-size="26" fill="#B71C1C" text-anchor="middle">人</text>
+                <text x="22.5" y="54" font-family="'Noto Sans KR', sans-serif" font-weight="900" font-size="24" fill="#B71C1C" text-anchor="middle">ㅊ</text>
+              </g>
+              <text x="100" y="142" font-family="'Outfit', sans-serif" font-weight="700" font-size="14.5" fill="#6B1A12" text-anchor="middle" letter-spacing="0.2">Korean street food</text>
+            </svg>
+          </div>
+          <div class="brand-text-block">
+            <span class="brand-name">
+              <span class="brand-name-red">SEOUL</span>
+              <span class="brand-name-orange">CHICK</span>
+            </span>
+            <span class="brand-sub">Korean street food</span>
+          </div>
+        </a>
+
+        <!-- Requirement 8: Single Branch Pill (Amir Temur Only) -->
+        <div class="header-branch-pill">
+          <span class="branch-live-dot"></span>
+          <span>📍 Amir Temur xiyoboni</span>
+          <span style="color:var(--accent-amber-light); font-weight:800; font-size:0.75rem;">⚡ 25-35 min</span>
+        </div>
+
+        <!-- Telegram Profile Pill (Mini App) -->
+        <div id="headerTgPill" class="header-branch-pill" style="display:none; border-color:rgba(59,130,246,0.35); background:rgba(59,130,246,0.12); color:#93C5FD;">
+          <span style="font-size:0.9rem;">👤</span>
+          <span id="headerTgName">Telegram</span>
+        </div>
+
+        <!-- Header Actions -->
+        <div class="header-actions">
+          <a href="https://t.me/Jacob_media" target="_blank" rel="noopener" class="btn-header-action" style="color:#60A5FA; border-color:rgba(96,165,250,0.35); background:rgba(96,165,250,0.08);" title="Admin va Texnik Yordam: @Jacob_media">
+            <span>💬</span>
+            <span style="font-weight:700;">@Jacob_media</span>
+          </a>
+
+          <a href="tel:+998921953003" class="btn-header-action btn-call" title="Qo'ng'iroq qilish: +998 92 195 30 03">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+            <span style="font-weight:700;">+998 92 195 30 03</span>
+          </a>
+
+          <a href="https://instagram.com/seoulchick.uz" target="_blank" rel="noopener" class="btn-header-action btn-instagram" title="Instagram @seoulchick.uz">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+            </svg>
+            <span style="display: none; @media(min-width: 480px){display:inline;}">@seoulchick.uz</span>
+          </a>
+
+          <button class="btn-cart-desktop" onclick="openCartModal()" title="Savat">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="21" r="1"/>
+              <circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            <span>Savat</span>
+            <span class="badge-count cart-total-badge">0</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       REQUIREMENT 2: HERO SECTION (CINEMATIC TONING & PRESTIGE LIGHTING)
+       ========================================================================== -->
+  <section class="hero-section" id="hero">
+    <div class="container">
+      <div class="hero-grid">
+        
+        <!-- Left: Headline & Slogan -->
+        <div class="hero-content">
+          <div class="hero-badges-top">
+            <span class="pill-badge pill-badge-halal">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+              100% Halol
+            </span>
+            <span class="pill-badge pill-badge-sauces">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+              </svg>
+              Maxsus quyiladigan souslar
+            </span>
+            <span class="pill-badge pill-badge-tashkent">
+              📍 Amir Temur filiali
+            </span>
+          </div>
+
+          <h1 class="hero-title">
+            Haqiqiy Koreyscha <br>
+            <span class="hero-title-highlight">qarsildoq tovuq</span> <br>
+            va qanotchalar Toshkentda!
+          </h1>
+
+          <p class="hero-desc">
+            <strong>Chicken'ni boshqacha sevishga tayyorlaning.</strong> 
+            Har bir taom issiq holida maxsus sirli sous bilan qoplanadi, oq qovurilgan kunjut sepiladi va o'zgacha shira beradi. 
+            Birgina tanlov — <strong>chicken</strong>.
+          </p>
+
+          <div class="hero-cta-group">
+            <a href="#menu" class="btn-primary">
+              <span>Menyuni ko'rish</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <polyline points="19 12 12 19 5 12"></polyline>
+              </svg>
+            </a>
+            <button onclick="openCartModal()" class="btn-secondary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"/>
+                <circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+              </svg>
+              <span>Buyurtma berish</span>
+            </button>
+          </div>
+
+          <!-- Highlight Stats -->
+          <div class="hero-stats-row">
+            <div class="stat-item">
+              <div class="stat-val stat-val-amber">25-35m</div>
+              <div class="stat-lbl">Yetkazib berish</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-val">5 xil</div>
+              <div class="stat-lbl">Quyiladigan sous</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-val stat-val-amber">100%</div>
+              <div class="stat-lbl">Halol tovuq</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Official Reference Photo 2 (Wings in Restaurant Box) -->
+        <div class="hero-visual">
+          <div class="hero-card-frame">
+            <div class="hero-img-box">
+              <img src="assets/seoul-chick-wings.jpg" alt="Seoul Chick Korean Fried Chicken Wings" class="hero-img" onerror="this.src='assets/seoul-chick-thighs.jpg'">
+              <div class="hero-img-overlay"></div>
+            </div>
+
+            <!-- Floating Badges -->
+            <div class="hero-float-badge hero-float-badge-1">
+              <span class="float-icon">🍗</span>
+              <div>
+                <div class="float-text-title">Ultra Qarsildoq</div>
+                <div class="float-text-sub">Asl Koreyscha resept</div>
+              </div>
+            </div>
+
+            <div class="hero-float-badge hero-float-badge-2">
+              <span class="float-icon">🌶️</span>
+              <div>
+                <div class="float-text-title">Sweet Chili & Teriyaki</div>
+                <div class="float-text-sub">Quyiladigan sous bilan</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       CATEGORY TABS & SEARCH
+       ========================================================================== -->
+  <div class="category-nav-sticky">
+    <div class="container">
+      <div class="categories-scroll">
+        <button class="category-pill active" onclick="filterCategory('all', this)">
+          <span>🔥 Barchasi</span>
+        </button>
+        <button class="category-pill" onclick="filterCategory('chicken', this)">
+          <span>🍗 Qanotchalar & Tovuq</span>
+        </button>
+        <button class="category-pill" onclick="filterCategory('combos', this)">
+          <span>⚡ Setlar (Kombolar)</span>
+        </button>
+        <button class="category-pill" onclick="filterCategory('fries', this)">
+          <span>🍟 Fri & Qo'shimchalar</span>
+        </button>
+        <button class="category-pill" onclick="filterCategory('sauces', this)">
+          <span>🥣 Souslar & Salatlar</span>
+        </button>
+        <button class="category-pill" onclick="filterCategory('drinks', this)">
+          <span>🥤 Muzdek Ichimliklar</span>
+        </button>
+        <button class="category-pill" onclick="filterCategory('branch', this)">
+          <span>📍 Filialimiz</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Menu Container -->
+  <main class="container" id="menu">
+    
+    <!-- Search / Filter Bar -->
+    <div class="menu-filter-bar">
+      <div class="search-box">
+        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="searchInput" class="search-input" placeholder="Taom yoki ichimlik qidirish..." oninput="handleSearch(this.value)">
+      </div>
+      <div class="menu-filter-info">
+        Menyuda: <span id="dishCountDisplay">0 xil taom</span>
+      </div>
+    </div>
+
+    <!-- REQUIREMENT 6: SPECIAL SAUCE COATING EXPLANATION BANNER -->
+    <div class="sauce-coating-banner">
+      <div>
+        <h3 class="sauce-coating-title">
+          <span>✨ Maxsus quyiladigan sirli souslar</span>
+        </h3>
+        <p class="sauce-coating-desc">
+          Bizning bepul va buyurtma qilinadigan souslarimiz — alohida idishdagi botirib yeyiladigan sous emas, balki 
+          <strong>qaynoq tovuq va fri ustidan bir tekis quyilib, sirlanadigan xushbo'y maxsus sousdir!</strong>
+        </p>
+      </div>
+      <div class="sauce-badges-list">
+        <span class="sauce-item-badge">
+          <span class="sauce-dot" style="background: #E50914;"></span>
+          Sweet Chili (Shirin-achchiq)
+        </span>
+        <span class="sauce-item-badge">
+          <span class="sauce-dot" style="background: #795548;"></span>
+          Teriyaki (Yaponcha shirin-sho'r)
+        </span>
+        <span class="sauce-item-badge">
+          <span class="sauce-dot" style="background: #D84315;"></span>
+          BBQ (Tutunli boy ta'm)
+        </span>
+        <span class="sauce-item-badge">
+          <span class="sauce-dot" style="background: #FF5722;"></span>
+          Spicy 🌶️ (Achchiq qalampirli)
+        </span>
+        <span class="sauce-item-badge">
+          <span class="sauce-dot" style="background: #B71C1C;"></span>
+          Extra Spicy 🔥🔥 (Olovli kuchli)
+        </span>
+      </div>
+    </div>
+
+    <!-- Section A: Qanotchalar & Tovuq son (Reference Photo 1 & 2) -->
+    <section class="menu-section" id="sec-chicken" data-category="chicken">
+      <div class="section-header">
+        <div>
+          <div class="section-title-wrap">
+            <span class="section-icon">🍗</span>
+            <h2 class="section-title">Qanotchalar & Tovuq son</h2>
+          </div>
+          <p class="section-subtitle">Qarsildoq qobiq, yumshoq tovuq go'shti va ustiga quyiladigan bepul souslar bilan</p>
+        </div>
+      </div>
+      <div class="cards-grid" id="grid-chicken"></div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- Section B: Setlar (Kombolar) - EXACT FROM PHOTO 2 -->
+    <section class="menu-section" id="sec-combos" data-category="combos">
+      <div class="section-header">
+        <div>
+          <div class="section-title-wrap">
+            <span class="section-icon">⚡</span>
+            <h2 class="section-title">Setlarimiz (Kombo to'plamlar)</h2>
+          </div>
+          <p class="section-subtitle">Do'stlar va oila uchun eng to'yimli va super tejamkor kombolar</p>
+        </div>
+      </div>
+      <div class="cards-grid" id="grid-combos"></div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- Section C: Fri va Qo'shimchalar (ACCURATELY CROPPED & ISOLATED) -->
+    <section class="menu-section" id="sec-fries" data-category="fries">
+      <div class="section-header">
+        <div>
+          <div class="section-title-wrap">
+            <span class="section-icon">🍟</span>
+            <h2 class="section-title">Fri va Qo'shimchalar</h2>
+          </div>
+          <p class="section-subtitle">Oltinrang qarsildoq fri, qiyma go'shtli va erigan pishloqli garnirlar</p>
+        </div>
+      </div>
+      <div class="cards-grid" id="grid-fries"></div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- Section D: Souslar & Salatlar (ACCURATELY CROPPED HEINZ & SALAT) -->
+    <section class="menu-section" id="sec-sauces" data-category="sauces">
+      <div class="section-header">
+        <div>
+          <div class="section-title-wrap">
+            <span class="section-icon">🥣</span>
+            <h2 class="section-title">Heinz Souslar & Yangi Salatlar</h2>
+          </div>
+          <p class="section-subtitle">Alohida Heinz souslari (5 000 UZS) va yangi Coleslaw salati (10 000 UZS)</p>
+        </div>
+      </div>
+      <div class="cards-grid" id="grid-sauces"></div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- Section E: Ichimliklar (REBRANDED MODERN BEVERAGES) -->
+    <section class="menu-section" id="sec-drinks" data-category="drinks">
+      <div class="section-header">
+        <div>
+          <div class="section-title-wrap">
+            <span class="section-icon">🥤</span>
+            <h2 class="section-title">Muzdek Ichimliklar</h2>
+          </div>
+          <p class="section-subtitle">Coca-Cola, Fanta, Sprite, Cappy tabiiy sharbatlari va kraft ichimliklar</p>
+        </div>
+      </div>
+      <div class="cards-grid" id="grid-drinks"></div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ==========================================================================
+         REQUIREMENT 8: SINGLE BRANCH SECTION (AMIR TEMUR STRICTLY)
+         ========================================================================== -->
+    <section class="branch-section-single" id="sec-branch" data-category="branch">
+      <div class="section-header">
+        <div>
+          <div class="section-title-wrap">
+            <span class="section-icon">📍</span>
+            <h2 class="section-title">Bizning Filialimiz</h2>
+          </div>
+          <p class="section-subtitle">Toshkent markazida xizmatingizdamiz</p>
+        </div>
+      </div>
+
+      <div class="single-branch-box">
+        <div>
+          <div class="single-branch-header">
+            <h3 class="single-branch-title">SEOUL CHICK — Amir Temur filiali</h3>
+            <span class="single-branch-badge">
+              <span class="branch-live-dot"></span>
+              Hozir ochiq (23:00 gacha)
+            </span>
+          </div>
+
+          <div class="single-branch-details">
+            <div class="single-branch-row">
+              <span>📍</span>
+              <span><strong>Manzil:</strong> Toshkent shahri, ko'cha Yahyo G'ulomov <br><span style="color:var(--accent-amber-light); font-weight:700;">Mo'ljal: Amir Temur xiyoboni (Сквер) ro'parasi</span></span>
+            </div>
+
+            <div class="single-branch-row">
+              <span>⏰</span>
+              <span><strong>Ish vaqti:</strong> Har kuni: 11:00 — 23:00 (dam olishsiz)</span>
+            </div>
+
+            <div class="single-branch-row">
+              <span>⚡</span>
+              <span><strong>Yetkazib berish:</strong> 25-35 daqiqa (Yandex Dostavka bo'yicha)</span>
+            </div>
+
+            <div class="single-branch-row">
+              <span>📞</span>
+              <span><strong>Aloqa telefoni:</strong> <a href="tel:+998921953003" style="color:#FFF; text-decoration:underline; font-weight:700;">+998 92 195 30 03</a></span>
+            </div>
+          </div>
+
+          <div class="single-branch-actions">
+            <a href="https://yandex.com/maps/?text=Toshkent+Yahyo+G'ulomov+Amir+Temur+xiyoboni" target="_blank" rel="noopener" class="btn-primary" style="padding:12px 22px; font-size:0.9rem;">
+              <span>🗺️ Yandex Kartada ochish</span>
+            </a>
+            <a href="tel:+998921953003" class="btn-secondary" style="padding:12px 22px; font-size:0.9rem;">
+              <span>📞 Qo'ng'iroq qilish</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Styled Minimalist Dark Map for Amir Temur -->
+        <div class="map-single-wrapper">
+          <div class="map-grid-layer"></div>
+          <div class="map-single-marker">
+            <div class="single-marker-pill">
+              <span>🍗</span>
+              <span>SEOUL CHICK (Amir Temur)</span>
+            </div>
+            <div class="single-marker-arrow"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       FOOTER
+       ========================================================================== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div>
+          <strong style="color:#FFFFFF;">© 2026 SEOUL CHICK (@seoulchick.uz)</strong> — Haqiqiy Koreyscha Streetfood Toshkentda.
+        </div>
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+          <span>Filial: Yahyo G'ulomov ko'chasi (Amir Temur) | <a href="tel:+998921953003" style="color:var(--accent-amber-light); font-weight:700;">+998 92 195 30 03</a></span>
+          <a href="https://t.me/Jacob_media" target="_blank" style="display:inline-flex; align-items:center; gap:5px; font-size:0.75rem; color:#60A5FA; text-decoration:none; padding:4px 10px; border-radius:9999px; background:rgba(96,165,250,0.1); border:1px solid rgba(96,165,250,0.3); transition:all 0.2s ease;">
+            <span>💬</span>
+            <span>Admin: @Jacob_media</span>
+          </a>
+          <a href="admin.html" target="_blank" style="display:inline-flex; align-items:center; gap:5px; font-size:0.75rem; color:var(--text-dim); text-decoration:none; padding:4px 10px; border-radius:9999px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); transition:all 0.2s ease;">
+            <span>🔒</span>
+            <span>Admin</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       FLOATING CART BAR (MOBILE & TELEGRAM MINI APP)
+       ========================================================================== -->
+  <div class="floating-cart-bar" id="floatingCart">
+    <div class="float-cart-left" onclick="openCartModal()">
+      <div class="float-cart-icon-wrap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"/>
+          <circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+        <div class="float-badge cart-total-badge">0</div>
+      </div>
+      <div class="float-cart-info">
+        <span class="float-cart-label">Savatingizda: <span id="cartCountLabel">0 ta</span></span>
+        <span class="float-cart-total" id="cartTotalLabel">0 UZS</span>
+      </div>
+    </div>
+
+    <button class="btn-float-checkout" onclick="openCartModal()">
+      <span>Buyurtma berish</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+        <polyline points="12 5 19 12 12 19"></polyline>
+      </svg>
+    </button>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: ITEM CONFIGURATOR (PORTION, COMBO CUSTOMIZER & SAUCE SELECTOR)
+       ========================================================================== -->
+  <div class="modal-overlay" id="configModal" onclick="handleModalOverlayClick(event, 'configModal')">
+    <div class="modal-sheet">
+      <div class="modal-drag-indicator"></div>
+      <div class="modal-header">
+        <div class="modal-title" id="configDishTitle">Taomni sozlash</div>
+        <button class="btn-close-modal" onclick="closeModal('configModal')">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px;">
+          <img id="configDishImg" src="" alt="" style="width:68px; height:68px; border-radius:12px; object-fit:cover; background:#181820; flex-shrink:0;">
+          <div>
+            <div id="configDishDesc" style="font-size:0.82rem; color:var(--text-muted); line-height:1.4;"></div>
+            <div id="configComboTagsContainer" class="combo-items-pills" style="margin-top:6px; display:none;"></div>
+          </div>
+        </div>
+
+        <div id="configPortionSection">
+          <div class="option-group-title">
+            <span id="configPortionLabel">Porsiya hajmini tanlang</span>
+            <span class="required-tag">Tanlash shart</span>
+          </div>
+          <div class="options-grid" id="configVariantsContainer"></div>
+        </div>
+
+        <div id="configSauceSection" style="display:none;">
+          <div class="option-group-title">
+            <span>Ustiga quyiladigan bepul sousni tanlang</span>
+            <span class="required-tag" style="background:rgba(255,87,34,0.18); color:var(--accent-orange);">1 ta bepul</span>
+          </div>
+          <div class="options-grid" id="configSaucesContainer"></div>
+        </div>
+
+        <div id="configDrinkSection" style="display:none;">
+          <div class="option-group-title">
+            <span>Kombo ichimligini tanlang</span>
+            <span class="required-tag">Tanlash shart</span>
+          </div>
+          <div class="options-grid" id="configDrinkContainer"></div>
+        </div>
+
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:16px; padding-top:16px; border-top:1px solid var(--border-subtle);">
+          <span style="font-size:0.88rem; font-weight:700; color:#FFFFFF;">Miqdori:</span>
+          <div class="quantity-control">
+            <button class="btn-qty" onclick="changeConfigQty(-1)">-</button>
+            <span class="qty-number" id="configQtyDisplay">1</span>
+            <button class="btn-qty" onclick="changeConfigQty(1)">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-primary" style="width:100%; justify-content:center;" onclick="confirmAddToCart()">
+          <span id="configSubmitBtnText">Savatga qo'shish • 0 UZS</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: FULL CART & TELEGRAM CHECKOUT
+       ========================================================================== -->
+  <div class="modal-overlay" id="cartModal" onclick="handleModalOverlayClick(event, 'cartModal')">
+    <div class="modal-sheet" style="max-width: 600px;">
+      <div class="modal-drag-indicator"></div>
+      <div class="modal-header">
+        <div class="modal-title" style="display:flex; align-items:center; gap:8px;">
+          <span>🛒 Sizning savatingiz</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button onclick="clearCart()" style="font-size:0.75rem; color:var(--accent-red); font-weight:700; padding:4px 8px;" id="btnClearCart">Tozalash</button>
+          <button class="btn-close-modal" onclick="closeModal('cartModal')">&times;</button>
+        </div>
+      </div>
+
+      <div class="modal-body" id="cartModalBody">
+        <div id="cartItemsContainer" class="cart-items-list"></div>
+
+        <div id="emptyCartNotice" class="empty-cart-state" style="display:none;">
+          <div class="empty-icon">🍗</div>
+          <h4 class="empty-title">Savatingiz hozircha bo'sh</h4>
+          <p class="empty-sub">Koreyscha qarsildoq qanotchalar yoki to'yimli kombo tanlang!</p>
+          <button class="btn-primary" onclick="closeModal('cartModal'); location.href='#menu';">
+            <span>Menyudan tanlash</span>
+          </button>
+        </div>
+
+        <div id="checkoutFormArea">
+          <div class="checkout-form-section">
+            <div class="form-section-title">
+              <span>🚚 Yetkazib berish usuli</span>
+            </div>
+
+            <div class="delivery-toggle-group">
+              <div class="delivery-toggle-btn active" id="btnTypeDelivery" onclick="setOrderType('delivery')">
+                <span>🚚 Yetkazib berish</span>
+              </div>
+              <div class="delivery-toggle-btn" id="btnTypePickup" onclick="setOrderType('pickup')">
+                <span>🛍️ Olib ketish (Amir Temur)</span>
+              </div>
+            </div>
+
+            <!-- Telegram Profile Mini App Registration -->
+            <div id="tgAuthNotice" style="display:none; background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.3); border-radius:var(--radius-sm); padding:10px; margin-bottom:14px; align-items:center; gap:10px;">
+              <div id="tgUserAvatar" style="width:36px; height:36px; border-radius:50%; background:#2563EB; display:flex; align-items:center; justify-content:center; font-weight:800; color:#fff; font-size:0.85rem;">TG</div>
+              <div style="flex:1;">
+                <div style="font-size:0.82rem; font-weight:700; color:#FFFFFF;" id="tgProfileName">Telegram Profil</div>
+                <div style="font-size:0.75rem; color:#60A5FA;" id="tgProfileUsername">@username</div>
+              </div>
+              <span style="font-size:0.7rem; color:#34D399; font-weight:700; background:rgba(16,185,129,0.15); padding:3px 8px; border-radius:9999px;">✓ Avtorizatsiya</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="custName">Ismingiz *</label>
+              <input type="text" id="custName" class="form-input" placeholder="Masalan: Azizbek">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="custPhone">Telefon raqamingiz *</label>
+              <input type="tel" id="custPhone" class="form-input" placeholder="+998 90 123 45 67" value="+998 ">
+            </div>
+
+            <div class="form-group" id="addressGroup">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <label class="form-label" for="custAddress" style="margin-bottom:0;">Yetkazish manzili *</label>
+                <button type="button" class="btn-detect-loc" onclick="detectUserLocation()" style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.35); color:#34D399; font-size:0.75rem; font-weight:700; padding:4px 10px; border-radius:9999px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
+                  <span>📍</span>
+                  <span id="locDetectBtnText">Lokatsiyamni aniqlash</span>
+                </button>
+              </div>
+              <input type="text" id="custAddress" class="form-input" placeholder="Tuman, ko'cha, uy, xonadon (mo'ljal)">
+              <div id="locStatusBadge" style="display:none; font-size:0.75rem; color:#34D399; margin-top:5px; font-weight:600;">
+                ✓ Xarita havolasi biriktirildi (Google / Yandex)
+              </div>
+            </div>
+
+            <div class="form-group" id="pickupNoticeGroup" style="display:none; background:rgba(255,87,34,0.12); border:1px solid rgba(255,87,34,0.3); border-radius:var(--radius-sm); padding:10px;">
+              <div style="font-size:0.8rem; font-weight:700; color:var(--accent-orange);">📍 Filial manzili:</div>
+              <div style="font-size:0.75rem; color:#FFFFFF; margin-top:2px;">Toshkent sh., ko'cha Yahyo G'ulomov (Amir Temur xiyoboni ro'parasi)</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="custComment">Qo'shimcha izoh yoki istaklar</label>
+              <textarea id="custComment" class="form-textarea" placeholder="Masalan: Domofon kodi, sousni alohida ajratmang, ko'proq quying..."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">To'lov turi</label>
+              <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:6px;">
+                <label style="background:rgba(255,255,255,0.05); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:8px 6px; text-align:center; font-size:0.75rem; font-weight:700; cursor:pointer; color:#FFF;">
+                  <input type="radio" name="payType" value="Naqd pul" checked style="display:none;">
+                  💵 Naqd pul
+                </label>
+                <label style="background:rgba(255,255,255,0.05); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:8px 6px; text-align:center; font-size:0.75rem; font-weight:700; cursor:pointer; color:#FFF;">
+                  <input type="radio" name="payType" value="Click" style="display:none;">
+                  🔵 Click
+                </label>
+                <label style="background:rgba(255,255,255,0.05); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:8px 6px; text-align:center; font-size:0.75rem; font-weight:700; cursor:pointer; color:#FFF;">
+                  <input type="radio" name="payType" value="Payme" style="display:none;">
+                  🟢 Payme
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="order-summary-box">
+            <div class="summary-line">
+              <span>Taomlar qiymati:</span>
+              <span id="summarySubtotal" style="color:#FFFFFF; font-weight:700;">0 UZS</span>
+            </div>
+            <div class="summary-line" id="deliveryFeeLine">
+              <span>Yetkazib berish xizmati:</span>
+              <span style="color:#34D399; font-weight:700;">Yandex bo'yicha hisoblanadi</span>
+            </div>
+            <div class="summary-line total">
+              <span>Jami to'lov:</span>
+              <span class="price" id="summaryTotal">0 UZS</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer" id="cartFooterArea">
+        <button class="btn-submit-order" onclick="submitTelegramOrder()">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+          </svg>
+          <span>Telegram orqali buyurtma qilish</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: ORDER SUCCESS / RECEIPT
+       ========================================================================== -->
+  <div class="modal-overlay" id="successModal" onclick="handleModalOverlayClick(event, 'successModal')">
+    <div class="modal-sheet" style="max-width: 500px;">
+      <div class="modal-header">
+        <div class="modal-title">Buyurtma yuborildi! 🎉</div>
+        <button class="btn-close-modal" onclick="closeModal('successModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="success-content">
+          <div class="success-icon-wrap">✓</div>
+          <h3 style="font-family:var(--font-display); font-size:1.35rem; color:#FFFFFF; margin-bottom:8px;">
+            Rahmat! Buyurtmangiz qabul qilindi
+          </h3>
+          <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+            Telegram orqali Amir Temur filiali operatoriga to'liq chek yo'naltirildi.
+          </p>
+
+          <div class="receipt-preview-box" id="successReceiptPreview"></div>
+
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <a id="btnSuccessTelegramLink" href="#" target="_blank" class="btn-submit-order" style="text-decoration:none;">
+              <span>💬 Telegramda ochish</span>
+            </a>
+            <button class="btn-secondary" onclick="copyReceiptToClipboard()">
+              <span id="btnCopyReceiptText">📋 Chekni nusxalash</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Element -->
+  <div class="toast-notification" id="toastNotice">
+    <span>🍗</span>
+    <span id="toastMsg">Savatga qo'shildi!</span>
+  </div>
+
+  <!-- ==========================================================================
+       JAVASCRIPT: MENU DATA & INTERACTIVE LOGIC
+       ========================================================================== -->
+  <script>
+    // --- 1. TELEGRAM WEB APP & USER PROFILE INITIALIZATION ---
+    const tg = window.Telegram?.WebApp;
+    let telegramUser = null;
+    let detectedLocationUrl = null;
+
+    if (tg) {
+      tg.ready();
+      tg.expand();
+      if (tg.setHeaderColor) tg.setHeaderColor('#14141A');
+      if (tg.setBackgroundColor) tg.setBackgroundColor('#0B0B0B');
+      if (tg.enableClosingConfirmation) tg.enableClosingConfirmation();
+
+      if (tg.initDataUnsafe?.user) {
+        telegramUser = tg.initDataUnsafe.user;
+        console.log("👤 Telegram User aniqlandi:", telegramUser);
+      }
+    }
+
+    function triggerHaptic(type = 'medium') {
+      if (tg?.HapticFeedback) {
+        if (type === 'success') tg.HapticFeedback.notificationOccurred('success');
+        else if (type === 'light') tg.HapticFeedback.impactOccurred('light');
+        else tg.HapticFeedback.impactOccurred('medium');
+      }
+    }
+
+    // Geolocation detector
+    function detectUserLocation() {
+      triggerHaptic('light');
+      const btnText = document.getElementById('locDetectBtnText');
+      const statusBadge = document.getElementById('locStatusBadge');
+      const addrInput = document.getElementById('custAddress');
+
+      if (!navigator.geolocation) {
+        alert("Brauzeringiz geolokatsiyani qo'llab-quvvatlamaydi. Iltimos, manzilni qo'lda kiriting.");
+        return;
+      }
+
+      btnText.innerText = "Aniqlanmoqda...";
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          triggerHaptic('success');
+          const lat = pos.coords.latitude.toFixed(6);
+          const lng = pos.coords.longitude.toFixed(6);
+          detectedLocationUrl = `https://maps.google.com/?q=${lat},${lng}`;
+          
+          btnText.innerText = "✓ Aniqlandi";
+          if (statusBadge) {
+            statusBadge.style.display = 'block';
+            statusBadge.innerHTML = `✓ Lokatsiya biriktirildi: <a href="${detectedLocationUrl}" target="_blank" style="color:#34D399; text-decoration:underline;">Xaritada ko'rish</a>`;
+          }
+          if (addrInput && !addrInput.value.trim()) {
+            addrInput.value = `GPS: ${lat}, ${lng} (Xarita biriktirildi)`;
+          }
+        },
+        (err) => {
+          console.warn("Geolokatsiya xatosi:", err);
+          btnText.innerText = "Lokatsiyamni aniqlash";
+          alert("Lokatsiyani aniqlashga ruxsat berilmadi yoki xatolik yuz berdi. Iltimos, manzilingizni qo'lda kiriting.");
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    }
+
+    // --- 2. MENU DATABASE (STRICT ACCORDANCE WITH SOURCE PHOTOS & PRICES) ---
+    const FREE_SAUCES = [
+      { id: 'sweet_chili', name: 'Sweet Chili', desc: "Shirin-achchiq, yengil ta'm (tovuq ustiga quyiladi)", icon: '🍯' },
+      { id: 'teriyaki', name: 'Teriyaki', desc: "Shirin va yoqimli sho'r (tovuq ustiga quyiladi)", icon: '🥢' },
+      { id: 'bbq', name: 'BBQ', desc: "Tutunli, shirin va boy ta'm (tovuq ustiga quyiladi)", icon: '🍖' },
+      { id: 'spicy', name: 'Spicy', desc: "Achchiq va xushbo'y qalampir ta'mi", icon: '🌶️' },
+      { id: 'extra_spicy', name: 'Extra Spicy', desc: "Juda achchiq, kuchli olovli ta'm 🔥", icon: '🔥' }
+    ];
+
+    const COMBO_DRINKS = [
+      { name: 'Coca-Cola 0.5L' },
+      { name: 'Coca-Cola Zero 0.5L' },
+      { name: 'Fanta Apelsin 0.5L' },
+      { name: 'Sprite Limon-Laym 0.5L' }
+    ];
+
+    const MENU_ITEMS = [
+      // =========================================================================
+      // A. QANOTCHALAR & TOVUQ SON (PHOTOS 1 & 2 REFERENCE)
+      // =========================================================================
+      {
+        id: 'wings',
+        category: 'chicken',
+        name: "Qanotchalar (Крылышки)",
+        desc: "Koreyscha sirli marinad va ustiga quyiladigan issiq sous bilan qoplangan ultra qarsildoq qanotchalar. Qovurilgan oq kunjut sepilgan.",
+        image: "assets/seoul-chick-wings.jpg",
+        badge: "Top Xit 🔥",
+        badgeClass: "badge-hot",
+        hasFreeSauce: true,
+        variants: [
+          { name: "4 dona", price: 33000 },
+          { name: "6 dona", price: 49000, default: true },
+          { name: "8 dona", price: 59000 }
+        ]
+      },
+      {
+        id: 'chicken_thigh',
+        category: 'chicken',
+        name: "Tovuq son (Куриное бедро)",
+        desc: "Suyaksiz suvli va mayin tovuq soni bo'laklari. Maxsus quyiladigan quyuq koreyscha sous va qarsildoq qobiq.",
+        image: "assets/seoul-chick-thighs.jpg",
+        badge: "100% Halol ✨",
+        badgeClass: "badge-hot",
+        hasFreeSauce: true,
+        variants: [
+          { name: "Mini (150gr)", price: 49000 },
+          { name: "Max (250gr)", price: 65000, default: true }
+        ]
+      },
+
+      // =========================================================================
+      // B. SETLARIMIZ (KOMBO TO'PLAMLAR - INDIVIDUAL ASSET FILES)
+      // =========================================================================
+      {
+        id: 'combo_mini',
+        category: 'combos',
+        name: "COMBO MINI",
+        desc: "Tovuq son mini (150gr) + Fri max + Coca-Cola 0.5L + 1 ta bepul quyiladigan sous.",
+        image: "assets/combo-mini.jpg",
+        badge: "Yangi Xit ⚡",
+        badgeClass: "badge-hot",
+        isCombo: true,
+        hasFreeSauce: true,
+        hasDrinkOption: true,
+        comboItems: ["Tovuq son mini 150g", "Fri max 120g", "Coca-Cola 0.5L", "1x Bepul sous"],
+        variants: [
+          { name: "To'liq Kombo Mini to'plami", price: 69000, default: true }
+        ]
+      },
+      {
+        id: 'combo_max',
+        category: 'combos',
+        name: "COMBO MAX",
+        desc: "6 ta qarsildoq qanotcha + Fri Italiano mini + Coca-Cola 0.5L + 1 ta bepul quyiladigan sous.",
+        image: "assets/combo-max.jpg",
+        badge: "Mashhur 🍗",
+        badgeClass: "badge-hot",
+        isCombo: true,
+        hasFreeSauce: true,
+        hasDrinkOption: true,
+        comboItems: ["6ta Qanotcha", "Fri Italiano mini", "Coca-Cola 0.5L", "1x Bepul sous"],
+        variants: [
+          { name: "To'liq Kombo Max to'plami", price: 79000, default: true }
+        ]
+      },
+      {
+        id: 'combo_dostlar',
+        category: 'combos',
+        name: "COMBO DO'STLAR",
+        desc: "2 ta tovuq son max + 2 ta Fri mini + 2 ta Cola 0.5L + Coleslaw salat + 2 ta bepul quyiladigan sous.",
+        image: "assets/combo-dostlar.jpg",
+        badge: "Hit Taklif 👥",
+        badgeClass: "badge-hot",
+        isCombo: true,
+        hasFreeSauce: true,
+        hasDrinkOption: true,
+        comboItems: ["2x Tovuq son max", "2x Fri mini", "2x Cola 0.5L", "Coleslaw salat", "2x Bepul sous"],
+        variants: [
+          { name: "Do'stlar davrasi uchun to'liq set", price: 159000, default: true }
+        ]
+      },
+      {
+        id: 'combo_oila',
+        category: 'combos',
+        name: "COMBO OILA (Семейный Комбо)",
+        desc: "2 ta tovuq son mini + 2 ta qanotchalar (6ta) + 2 ta Fri Italiano mini + 2 ta Fri max + 2 ta Cola 1L + Coleslaw salat + 4 ta bepul quyiladigan sous.",
+        image: "assets/combo-oila.jpg",
+        badge: "Super Tejamkor 👨‍👩‍👧‍👦",
+        badgeClass: "badge-hot",
+        isCombo: true,
+        hasFreeSauce: true,
+        hasDrinkOption: true,
+        comboItems: ["2x Tovuq son mini", "2x 6ta Qanotcha", "2x Fri Italiano", "2x Fri max", "2x Cola 1L", "Coleslaw", "4x Bepul sous"],
+        variants: [
+          { name: "Katta oilaviy super to'plam", price: 299000, default: true }
+        ]
+      },
+
+      // =========================================================================
+      // C. FRI VA QO'SHIMCHALAR (ISOLATED REAL CROPS)
+      // =========================================================================
+      {
+        id: 'fries_classic',
+        category: 'fries',
+        name: "Fri (Картофель фри)",
+        desc: "Oltinrang, to'lqinsimon qarsildoq qovurilgan klassik fri kartoshkasi firma paketida.",
+        image: "assets/product-fri-classic.png",
+        badge: "Qarsildoq 🍟",
+        variants: [
+          { name: "mini 60gr", price: 12000 },
+          { name: "max 120gr", price: 20000, default: true }
+        ]
+      },
+      {
+        id: 'fries_farsh',
+        category: 'fries',
+        name: "Fri farsh (Фри с фаршем)",
+        desc: "Xushbo'y go'shtli qiyma va maxsus pishloqli sous bilan qovurilgan to'yimli fri.",
+        image: "assets/product-fri-farsh.png",
+        badge: "To'yimli 🥩",
+        variants: [
+          { name: "mini 100gr", price: 35000 },
+          { name: "max 150gr", price: 49000, default: true }
+        ]
+      },
+      {
+        id: 'fries_italiano',
+        category: 'fries',
+        name: "Fri Italiano (Фри Итальяно)",
+        desc: "Eritilgan pishloq, maxsus sous va italyancha xushbo'y giyohlar sepilgan qarsildoq fri.",
+        image: "assets/product-fri-italiano.png",
+        badge: "Pishloqli 🧀",
+        badgeClass: "badge-cheese",
+        variants: [
+          { name: "mini 100gr", price: 35000 },
+          { name: "max 150gr", price: 49000, default: true }
+        ]
+      },
+
+      // =========================================================================
+      // D. SOUSLAR VA YANGI SALATLAR (ISOLATED CROPS & ACCURATE PRICES)
+      // =========================================================================
+      {
+        id: 'salad_coleslaw',
+        category: 'sauces',
+        name: "Coleslaw Salat (Коул Слоу)",
+        desc: "Koreyscha uslubda tayyorlangan mayin karamli, qarsildoq va shirin-nordon yangi salat.",
+        image: "assets/product-salat-coleslaw.png",
+        badge: "10 000 UZS 🥗",
+        variants: [{ name: "Standart stakan (150gr)", price: 10000, default: true }]
+      },
+      {
+        id: 'heinz_ketchup',
+        category: 'sauces',
+        name: "Heinz Ketchup (Tomato)",
+        desc: "Klassik quyuq va tabiiy pomidorli Heinz ketchupi.",
+        image: "assets/product-heinz-ketchup.png",
+        badge: "Heinz 🍅",
+        variants: [{ name: "Original vanna (25g)", price: 5000, default: true }]
+      },
+      {
+        id: 'heinz_mustard',
+        category: 'sauces',
+        name: "Heinz Classic Mustard / Pishloqli",
+        desc: "Mayin va xushbo'y sarg'ish rangli klassik Heinz xantal/pishloq sousi.",
+        image: "assets/product-heinz-mustard.png",
+        badge: "Heinz 🧀",
+        variants: [{ name: "Original vanna (25g)", price: 5000, default: true }]
+      },
+      {
+        id: 'heinz_garlic',
+        category: 'sauces',
+        name: "Heinz Garlic Sauce (Sarimsoqli)",
+        desc: "Xushbo'y sarimsoqli mayin oq qaymoq sousi.",
+        image: "assets/product-heinz-garlic.png",
+        badge: "Heinz 🧄",
+        variants: [{ name: "Original vanna (25g)", price: 5000, default: true }]
+      },
+
+      // =========================================================================
+      // E. ICHIMLIKLAR (REBRANDED MODERN BEVERAGES - INDIVIDUAL ASSET FILES)
+      // =========================================================================
+      {
+        id: 'drink_coca_cola',
+        category: 'drinks',
+        name: "Coca-Cola Classic",
+        desc: "Muzdek tetiklantiruvchi klassik gazlangan ichimlik.",
+        image: "assets/drink-coca-cola.jpg",
+        fallbackImage: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=800&q=80",
+        badge: "Muzdek ❄️",
+        variants: [
+          { name: "Alyumin banka 0.33L", price: 10000 },
+          { name: "Butilka 0.5L", price: 12000, default: true },
+          { name: "Butilka 1.0L", price: 16000 },
+          { name: "Butilka 1.5L", price: 20000 }
+        ]
+      },
+      {
+        id: 'drink_cola_zero',
+        category: 'drinks',
+        name: "Coca-Cola Zero Sugar",
+        desc: "Shakarsiz, yengil va muzdek tetiklantiruvchi ichimlik.",
+        image: "assets/drink-cola-zero.jpg",
+        fallbackImage: "https://images.unsplash.com/photo-1554866585-cd94860890b7?auto=format&fit=crop&w=800&q=80",
+        badge: "0% Shakar 🖤",
+        variants: [
+          { name: "Alyumin banka 0.33L", price: 10000 },
+          { name: "Butilka 0.5L", price: 12000, default: true }
+        ]
+      },
+      {
+        id: 'drink_fanta',
+        category: 'drinks',
+        name: "Fanta Apelsin",
+        desc: "Yorqin apelsin ta'miga ega muzdek gazlangan ichimlik.",
+        image: "assets/drink-fanta.jpg",
+        fallbackImage: "https://images.unsplash.com/photo-1624517452488-04869289c4ca?auto=format&fit=crop&w=800&q=80",
+        badge: "Apelsin 🍊",
+        variants: [
+          { name: "Alyumin banka 0.33L", price: 10000 },
+          { name: "Butilka 0.5L", price: 12000, default: true },
+          { name: "Butilka 1.0L", price: 16000 }
+        ]
+      },
+      {
+        id: 'drink_sprite',
+        category: 'drinks',
+        name: "Sprite Limon-Laym",
+        desc: "Limon va laym ta'mli tetiklantiruvchi salqin ichimlik.",
+        image: "assets/drink-sprite.jpg",
+        fallbackImage: "https://images.unsplash.com/photo-1625772299848-391b6a87d7b3?auto=format&fit=crop&w=800&q=80",
+        badge: "Limon-Laym 🍋",
+        variants: [
+          { name: "Alyumin banka 0.33L", price: 10000 },
+          { name: "Butilka 0.5L", price: 12000, default: true },
+          { name: "Butilka 1.0L", price: 16000 }
+        ]
+      },
+      {
+        id: 'drink_cappy',
+        category: 'drinks',
+        name: "Cappy tabiiy sharbat",
+        desc: "Meva vitaminlariga boy, tabiiy va shirin meva sharbati.",
+        image: "assets/drink-cappy.jpg",
+        fallbackImage: "https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=800&q=80",
+        badge: "Tabiiy 🍏",
+        variants: [
+          { name: "Butilka 0.5L", price: 15000, default: true },
+          { name: "Butilka 1.0L", price: 25000 }
+        ]
+      },
+      {
+        id: 'drink_pulpy',
+        category: 'drinks',
+        name: "Pulpy (Палпи) meva bo'lakli",
+        desc: "Haqiqiy apelsin meva go'shti bo'lakchalari bilan boyitilgan shirali ichimlik.",
+        image: "assets/drink-pulpy.jpg",
+        fallbackImage: "https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=800&q=80",
+        badge: "Pulpy 🍊",
+        variants: [
+          { name: "Butilka 0.5L", price: 15000, default: true },
+          { name: "Butilka 1.0L", price: 25000 }
+        ]
+      },
+      {
+        id: 'drink_lychee_soda',
+        category: 'drinks',
+        name: "Muzdek Lichi Gazli Ichimlik",
+        desc: "Ekzotik lichi mevasi ta'midagi ajoyib kraft gazli ichimlik (Sparkling Lychee Soda).",
+        image: "assets/drink-lychee.jpg",
+        fallbackImage: "https://images.unsplash.com/photo-1556881286-fc6915169721?auto=format&fit=crop&w=800&q=80",
+        badge: "Craft 🌸",
+        variants: [
+          { name: "Alyumin banka 0.33L", price: 15000, default: true }
+        ]
+      },
+      {
+        id: 'drink_mojito_craft',
+        category: 'drinks',
+        name: "Alkogolsiz Moxito (Mojito Craft Mix)",
+        desc: "Yalpiz, laym va muz bo'laklari bilan tayyorlangan tetiklantiruvchi salqin ichimlik.",
+        image: "assets/drink-mojito.jpg",
+        fallbackImage: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=800&q=80",
+        badge: "Muzdek Moxito 🍃",
+        variants: [
+          { name: "Butilka / Banka 0.45L", price: 18000, default: true }
+        ]
+      },
+      {
+        id: 'drink_bonaqua',
+        category: 'drinks',
+        name: "Bonaqua suv (Gazsiz / Gazli)",
+        desc: "Toza, tabiiy mineralli ichimlik suvi.",
+        image: "assets/drink-bonaqua.jpg",
+        fallbackImage: "https://images.unsplash.com/photo-1548839140-29a749e1bc4e?auto=format&fit=crop&w=800&q=80",
+        badge: "Muzdek 💧",
+        variants: [
+          { name: "Butilka 0.5L", price: 5000, default: true },
+          { name: "Butilka 1.0L", price: 8000 }
+        ]
+      }
+    ];
+
+    // --- 3. STATE MANAGEMENT ---
+    let cart = [];
+    let currentConfigDish = null;
+    let selectedVariant = null;
+    let selectedSauce = null;
+    let selectedDrinkFlavor = null;
+    let configQty = 1;
+    let orderType = 'delivery';
+
+    function formatUZS(amount) {
+      return Number(amount).toLocaleString('ru-RU') + ' UZS';
+    }
+
+    // --- 4. RENDER MENU CARDS ---
+    function renderMenuCards(itemsToRender = MENU_ITEMS) {
+      const grids = {
+        chicken: document.getElementById('grid-chicken'),
+        combos: document.getElementById('grid-combos'),
+        fries: document.getElementById('grid-fries'),
+        sauces: document.getElementById('grid-sauces'),
+        drinks: document.getElementById('grid-drinks')
+      };
+
+      Object.values(grids).forEach(g => { if(g) g.innerHTML = ''; });
+
+      const stopList = window.SeoulChickDB ? window.SeoulChickDB.getStopList() : {};
+
+      let count = 0;
+      itemsToRender.forEach(item => {
+        if (item.isDeleted) return;
+        const grid = grids[item.category];
+        if (!grid) return;
+        count++;
+
+        const isOutOfStock = !!stopList[item.id];
+        const discount = Number(item.discountPercent || 0);
+        const minPrice = Math.min(...item.variants.map(v => v.price));
+
+        let badgeMarkup = '';
+        if (isOutOfStock) {
+          badgeMarkup = `<div class="card-badge" style="background:#EF4444; color:#fff; border:1px solid rgba(239,68,68,0.5);">Tugagan (Stop-list)</div>`;
+        } else if (discount > 0) {
+          badgeMarkup = `<div class="card-badge" style="background:linear-gradient(135deg, #EF4444, #FF5722); color:#fff; font-weight:800; box-shadow:0 2px 10px rgba(239,68,68,0.45); font-size:0.75rem;">-${discount}% Chegirma</div>`;
+        } else if (item.badge) {
+          badgeMarkup = `<div class="card-badge ${item.badgeClass || ''}">${item.badge}</div>`;
+        }
+
+        let comboPillsMarkup = '';
+        if (item.comboItems && item.comboItems.length > 0) {
+          comboPillsMarkup = `
+            <div class="combo-items-pills">
+              ${item.comboItems.map(t => `<span class="combo-pill-tag">${t}</span>`).join('')}
+            </div>
+          `;
+        }
+
+        const imgPosStyle = item.imgPosition ? `style="object-position: ${item.imgPosition};"` : '';
+
+        const fallbackAttr = item.fallbackImage ? `data-fallback="${item.fallbackImage}"` : '';
+
+        let priceBlockMarkup = '';
+        if (discount > 0) {
+          const discountedMin = Math.round(minPrice * (1 - discount / 100));
+          priceBlockMarkup = `
+            <div class="price-block">
+              <span class="price-prefix" style="color:#EF4444; font-weight:800;">Aksiya narxi</span>
+              <div style="display:flex; align-items:baseline; gap:6px;">
+                <span style="text-decoration:line-through; color:var(--text-dim); font-size:0.8rem;">${formatUZS(minPrice)}</span>
+                <span class="price-amount" style="color:#FF5722;">${formatUZS(discountedMin)}</span>
+              </div>
+            </div>
+          `;
+        } else {
+          priceBlockMarkup = `
+            <div class="price-block">
+              <span class="price-prefix">${item.variants.length > 1 ? 'Narxi dan' : 'Narxi'}</span>
+              <span class="price-amount">${formatUZS(minPrice)}</span>
+            </div>
+          `;
+        }
+
+        const card = document.createElement('div');
+        card.className = 'dish-card' + (isOutOfStock ? ' out-of-stock' : '');
+        card.innerHTML = `
+          <div class="card-img-container">
+            ${badgeMarkup}
+            <img src="${item.image}" alt="${item.name}" class="card-img" ${imgPosStyle} ${fallbackAttr} loading="lazy" onerror="if(this.dataset.fallback && !this.src.includes(this.dataset.fallback)){ this.src = this.dataset.fallback; } else { this.src='assets/seoul-chick-thighs.jpg'; }">
+          </div>
+          <div class="card-content">
+            <div class="card-header-line">
+              <h3 class="dish-name">${item.name}</h3>
+            </div>
+            <p class="dish-desc">${item.desc}</p>
+            
+            ${comboPillsMarkup}
+
+            <div class="dish-variants-row">
+              ${item.variants.map(v => `<span class="variant-chip">${v.name}</span>`).join('')}
+              ${item.hasFreeSauce ? `<span class="variant-chip" style="color:var(--accent-orange); border-color:rgba(255,87,34,0.35);">+ Quyiladigan sous</span>` : ''}
+            </div>
+
+            <div class="card-footer">
+              ${priceBlockMarkup}
+              ${isOutOfStock ? `
+                <button class="btn-add-cart" disabled style="background:#262630; color:#9CA3AF; cursor:not-allowed; border:1px solid rgba(255,255,255,0.08); box-shadow:none;">
+                  <span>Tugagan</span>
+                </button>
+              ` : `
+                <button class="btn-add-cart" onclick="openConfigModal('${item.id}')">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                  <span>${item.isCombo ? 'Sozlash' : 'Qo\'shish'}</span>
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      const countEl = document.getElementById('dishCountDisplay');
+      if (countEl) countEl.innerText = `${count} xil taom va ichimlik`;
+    }
+
+    function filterCategory(cat, btnEl) {
+      triggerHaptic('light');
+      document.querySelectorAll('.category-pill').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+
+      const sections = document.querySelectorAll('.menu-section, .branch-section-single');
+      sections.forEach(sec => {
+        if (cat === 'all' || sec.getAttribute('data-category') === cat) {
+          sec.style.display = 'block';
+        } else {
+          sec.style.display = 'none';
+        }
+      });
+    }
+
+    function handleSearch(term) {
+      const q = term.trim().toLowerCase();
+      if (!q) {
+        renderMenuCards(MENU_ITEMS);
+        return;
+      }
+      const filtered = MENU_ITEMS.filter(it => 
+        it.name.toLowerCase().includes(q) || 
+        it.desc.toLowerCase().includes(q) ||
+        it.category.toLowerCase().includes(q)
+      );
+      renderMenuCards(filtered);
+    }
+
+    // --- 5. CONFIGURATOR MODAL (VARIANTS, COMBOS & SAUCES) ---
+    function openConfigModal(dishId) {
+      triggerHaptic('light');
+      const dish = MENU_ITEMS.find(d => d.id === dishId);
+      if (!dish) return;
+
+      const stopList = window.SeoulChickDB ? window.SeoulChickDB.getStopList() : {};
+      if (stopList[dishId]) {
+        alert("Kechirasiz, ushbu taom ayni vaqtda tugagan (Stop-list)!");
+        return;
+      }
+
+      currentConfigDish = dish;
+      configQty = 1;
+
+      selectedVariant = dish.variants.find(v => v.default) || dish.variants[0];
+      selectedSauce = dish.hasFreeSauce ? FREE_SAUCES[0] : null;
+      selectedDrinkFlavor = dish.hasDrinkOption ? COMBO_DRINKS[0].name : null;
+
+      document.getElementById('configDishTitle').innerText = dish.name;
+      document.getElementById('configDishDesc').innerText = dish.desc;
+      
+      const imgEl = document.getElementById('configDishImg');
+      imgEl.src = dish.image;
+      if (dish.imgPosition) imgEl.style.objectPosition = dish.imgPosition;
+      else imgEl.style.objectPosition = 'center center';
+      imgEl.onerror = () => {
+        if (dish.fallbackImage && !imgEl.src.includes(dish.fallbackImage)) {
+          imgEl.src = dish.fallbackImage;
+        } else {
+          imgEl.src = 'assets/seoul-chick-thighs.jpg';
+        }
+      };
+
+      const comboTagsBox = document.getElementById('configComboTagsContainer');
+      if (dish.comboItems && dish.comboItems.length > 0) {
+        comboTagsBox.style.display = 'flex';
+        comboTagsBox.innerHTML = dish.comboItems.map(t => `<span class="combo-pill-tag">${t}</span>`).join('');
+      } else {
+        comboTagsBox.style.display = 'none';
+      }
+
+      const portionLabel = document.getElementById('configPortionLabel');
+      if (portionLabel) {
+        if (dish.isCombo) portionLabel.innerText = "Kombo to'plamini tasdiqlang";
+        else if (dish.category === 'sauces') portionLabel.innerText = "Porsiyani tasdiqlang";
+        else if (dish.category === 'drinks') portionLabel.innerText = "Hajmini tanlang";
+        else portionLabel.innerText = "Porsiya hajmini tanlang";
+      }
+
+      const discount = Number(dish.discountPercent || 0);
+      const vContainer = document.getElementById('configVariantsContainer');
+      vContainer.innerHTML = '';
+      dish.variants.forEach((v) => {
+        const isSelected = v.name === selectedVariant.name;
+        const vFinalPrice = discount > 0 ? Math.round(v.price * (1 - discount / 100)) : v.price;
+        const card = document.createElement('div');
+        card.className = `option-card ${isSelected ? 'selected' : ''}`;
+        card.onclick = () => selectVariant(v, card);
+        card.innerHTML = `
+          <div class="option-left">
+            <div class="radio-circle"></div>
+            <div>
+              <div class="option-name">${v.name}</div>
+            </div>
+          </div>
+          <div class="option-price">
+            ${discount > 0 ? `<span style="text-decoration:line-through; color:var(--text-dim); font-size:0.75rem; margin-right:4px;">${formatUZS(v.price)}</span>` : ''}
+            <span style="${discount > 0 ? 'color:#FF5722; font-weight:800;' : ''}">${formatUZS(vFinalPrice)}</span>
+          </div>
+        `;
+        vContainer.appendChild(card);
+      });
+
+      const sauceSec = document.getElementById('configSauceSection');
+      if (dish.hasFreeSauce) {
+        sauceSec.style.display = 'block';
+        const sContainer = document.getElementById('configSaucesContainer');
+        sContainer.innerHTML = '';
+        FREE_SAUCES.forEach(s => {
+          const isSelected = selectedSauce && s.id === selectedSauce.id;
+          const card = document.createElement('div');
+          card.className = `option-card ${isSelected ? 'selected' : ''}`;
+          card.onclick = () => selectSauce(s, card);
+          card.innerHTML = `
+            <div class="option-left">
+              <div class="radio-circle"></div>
+              <div>
+                <div class="option-name">${s.icon} ${s.name}</div>
+                <div class="option-desc">${s.desc}</div>
+              </div>
+            </div>
+            <div class="option-price" style="color:#34D399; font-size:0.8rem;">BEPUL</div>
+          `;
+          sContainer.appendChild(card);
+        });
+      } else {
+        sauceSec.style.display = 'none';
+      }
+
+      const drinkSec = document.getElementById('configDrinkSection');
+      if (dish.hasDrinkOption) {
+        drinkSec.style.display = 'block';
+        const dContainer = document.getElementById('configDrinkContainer');
+        dContainer.innerHTML = '';
+        COMBO_DRINKS.forEach(f => {
+          const isSelected = selectedDrinkFlavor === f.name;
+          const card = document.createElement('div');
+          card.className = `option-card ${isSelected ? 'selected' : ''}`;
+          card.onclick = () => selectDrinkFlavor(f.name, card);
+          card.innerHTML = `
+            <div class="option-left">
+              <div class="radio-circle"></div>
+              <div class="option-name">${f.name}</div>
+            </div>
+            <div class="option-price" style="color:#34D399; font-size:0.8rem;">KIRITILGAN</div>
+          `;
+          dContainer.appendChild(card);
+        });
+      } else {
+        drinkSec.style.display = 'none';
+      }
+
+      document.getElementById('configQtyDisplay').innerText = configQty;
+      updateConfigModalPrice();
+      openModal('configModal');
+    }
+
+    function selectVariant(variant, cardEl) {
+      triggerHaptic('light');
+      selectedVariant = variant;
+      document.querySelectorAll('#configVariantsContainer .option-card').forEach(c => c.classList.remove('selected'));
+      cardEl.classList.add('selected');
+      updateConfigModalPrice();
+    }
+
+    function selectSauce(sauce, cardEl) {
+      triggerHaptic('light');
+      selectedSauce = sauce;
+      document.querySelectorAll('#configSaucesContainer .option-card').forEach(c => c.classList.remove('selected'));
+      cardEl.classList.add('selected');
+    }
+
+    function selectDrinkFlavor(flavor, cardEl) {
+      triggerHaptic('light');
+      selectedDrinkFlavor = flavor;
+      document.querySelectorAll('#configDrinkContainer .option-card').forEach(c => c.classList.remove('selected'));
+      cardEl.classList.add('selected');
+    }
+
+    function changeConfigQty(delta) {
+      triggerHaptic('light');
+      const next = configQty + delta;
+      if (next >= 1 && next <= 99) {
+        configQty = next;
+        document.getElementById('configQtyDisplay').innerText = configQty;
+        updateConfigModalPrice();
+      }
+    }
+
+    function updateConfigModalPrice() {
+      if (!selectedVariant) return;
+      const discount = Number(currentConfigDish?.discountPercent || 0);
+      const unitPrice = discount > 0 ? Math.round(selectedVariant.price * (1 - discount / 100)) : selectedVariant.price;
+      const total = unitPrice * configQty;
+      document.getElementById('configSubmitBtnText').innerText = `Savatga qo'shish • ${formatUZS(total)}`;
+    }
+
+    function confirmAddToCart() {
+      if (!currentConfigDish || !selectedVariant) return;
+      triggerHaptic('success');
+
+      const discount = Number(currentConfigDish?.discountPercent || 0);
+      const unitPrice = discount > 0 ? Math.round(selectedVariant.price * (1 - discount / 100)) : selectedVariant.price;
+
+      const itemKey = `${currentConfigDish.id}_${selectedVariant.name}_${selectedSauce?.id || 'none'}_${selectedDrinkFlavor || 'none'}`;
+
+      const existingIndex = cart.findIndex(it => it.key === itemKey);
+      if (existingIndex > -1) {
+        cart[existingIndex].qty += configQty;
+      } else {
+        cart.push({
+          key: itemKey,
+          dishId: currentConfigDish.id,
+          name: currentConfigDish.name,
+          image: currentConfigDish.image,
+          fallbackImage: currentConfigDish.fallbackImage,
+          variantName: selectedVariant.name,
+          price: unitPrice,
+          originalPrice: selectedVariant.price,
+          discountPercent: discount,
+          sauce: selectedSauce ? selectedSauce.name : null,
+          drinkFlavor: selectedDrinkFlavor,
+          qty: configQty
+        });
+      }
+
+      closeModal('configModal');
+      updateCartUI();
+      showToast(`${currentConfigDish.name} savatga qo'shildi! 🍗`);
+    }
+
+    function applyCustomMenuUpdates(customMap) {
+      if (!customMap) return;
+
+      MENU_ITEMS.forEach(item => {
+        if (customMap[item.id]) {
+          const ov = customMap[item.id];
+          item.isDeleted = !!ov.deleted;
+          if (ov.customImage || ov.image) {
+            item.image = ov.customImage || ov.image;
+            item.fallbackImage = '';
+          }
+          if (ov.discountPercent !== undefined) item.discountPercent = ov.discountPercent;
+          if (ov.price !== undefined && typeof ov.price === 'number') {
+            if (item.variants && item.variants.length > 0) {
+              item.variants[0].price = ov.price;
+            }
+          }
+          if (ov.badge) item.badge = ov.badge;
+        } else {
+          item.isDeleted = false;
+        }
+      });
+
+      Object.keys(customMap).forEach(id => {
+        const newItem = customMap[id];
+        if (newItem.deleted) return;
+        if (!MENU_ITEMS.some(it => it.id === id)) {
+          MENU_ITEMS.push({
+            id: newItem.id,
+            category: newItem.category || 'chicken',
+            name: newItem.name,
+            desc: newItem.desc || '',
+            image: newItem.customImage || newItem.image || 'assets/seoul-chick-thighs.jpg',
+            badge: newItem.badge || 'Yangi 🔥',
+            discountPercent: newItem.discountPercent || 0,
+            isDeleted: false,
+            variants: newItem.variants || [{ name: 'Standart porsiya', price: newItem.price || 40000, default: true }]
+          });
+        }
+      });
+
+      renderMenuCards(MENU_ITEMS);
+    }
+
+    // --- 6. CART STATE & UI SYNC ---
+    function updateCartUI() {
+      const totalCount = cart.reduce((sum, it) => sum + it.qty, 0);
+      const totalPrice = cart.reduce((sum, it) => sum + (it.price * it.qty), 0);
+
+      document.querySelectorAll('.cart-total-badge').forEach(el => el.innerText = totalCount);
+
+      const floatBar = document.getElementById('floatingCart');
+      const countLabel = document.getElementById('cartCountLabel');
+      const totalLabel = document.getElementById('cartTotalLabel');
+
+      if (totalCount > 0) {
+        floatBar.classList.add('visible');
+        if (countLabel) countLabel.innerText = `${totalCount} ta taom`;
+        if (totalLabel) totalLabel.innerText = formatUZS(totalPrice);
+      } else {
+        floatBar.classList.remove('visible');
+      }
+
+      renderCartModalItems();
+    }
+
+    function renderCartModalItems() {
+      const container = document.getElementById('cartItemsContainer');
+      const emptyNotice = document.getElementById('emptyCartNotice');
+      const checkoutArea = document.getElementById('checkoutFormArea');
+      const footerArea = document.getElementById('cartFooterArea');
+      const clearBtn = document.getElementById('btnClearCart');
+
+      if (!container) return;
+
+      if (cart.length === 0) {
+        container.innerHTML = '';
+        if (emptyNotice) emptyNotice.style.display = 'block';
+        if (checkoutArea) checkoutArea.style.display = 'none';
+        if (footerArea) footerArea.style.display = 'none';
+        if (clearBtn) clearBtn.style.display = 'none';
+        return;
+      }
+
+      if (emptyNotice) emptyNotice.style.display = 'none';
+      if (checkoutArea) checkoutArea.style.display = 'block';
+      if (footerArea) footerArea.style.display = 'flex';
+      if (clearBtn) clearBtn.style.display = 'inline-block';
+
+      container.innerHTML = '';
+      cart.forEach((it, index) => {
+        const itemTotal = it.price * it.qty;
+        let metaTags = [];
+        if (it.variantName) metaTags.push(`Porsiya: ${it.variantName}`);
+        if (it.sauce) metaTags.push(`Quyiladigan sous: ${it.sauce}`);
+        if (it.drinkFlavor) metaTags.push(`Ichimlik: ${it.drinkFlavor}`);
+
+        const itemEl = document.createElement('div');
+        itemEl.className = 'cart-item-card';
+        const fallbackAttr = it.fallbackImage ? `data-fallback="${it.fallbackImage}"` : '';
+        itemEl.innerHTML = `
+          <img src="${it.image}" alt="${it.name}" class="cart-item-thumb" ${fallbackAttr} onerror="if(this.dataset.fallback && !this.src.includes(this.dataset.fallback)){ this.src = this.dataset.fallback; } else { this.src='assets/seoul-chick-thighs.jpg'; }">
+          <div class="cart-item-details">
+            <div class="cart-item-title">${it.name}</div>
+            <div class="cart-item-meta">${metaTags.join(' • ')}</div>
+            <div class="cart-item-price">${formatUZS(itemTotal)}</div>
+          </div>
+          <div class="quantity-control">
+            <button class="btn-qty" onclick="modifyCartQty(${index}, -1)">-</button>
+            <span class="qty-number">${it.qty}</span>
+            <button class="btn-qty" onclick="modifyCartQty(${index}, 1)">+</button>
+          </div>
+          <button class="btn-remove-item" onclick="removeCartItem(${index})" title="Savatdan o'chirish" aria-label="O'chirish">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+          </button>
+        `;
+        container.appendChild(itemEl);
+      });
+
+      const grandTotal = cart.reduce((sum, it) => sum + (it.price * it.qty), 0);
+      document.getElementById('summarySubtotal').innerText = formatUZS(grandTotal);
+      document.getElementById('summaryTotal').innerText = formatUZS(grandTotal);
+    }
+
+    function modifyCartQty(index, delta) {
+      triggerHaptic('light');
+      if (!cart[index]) return;
+      cart[index].qty += delta;
+      if (cart[index].qty <= 0) {
+        cart.splice(index, 1);
+      }
+      updateCartUI();
+    }
+
+    function removeCartItem(index) {
+      triggerHaptic('light');
+      if (!cart[index]) return;
+      cart.splice(index, 1);
+      updateCartUI();
+    }
+
+    function clearCart() {
+      if (confirm("Haqiqatan ham savatni tozalamoqchimisiz?")) {
+        triggerHaptic('medium');
+        cart = [];
+        updateCartUI();
+      }
+    }
+
+    function openCartModal() {
+      triggerHaptic('medium');
+      renderCartModalItems();
+      openModal('cartModal');
+    }
+
+    function setOrderType(type) {
+      triggerHaptic('light');
+      orderType = type;
+      const btnDel = document.getElementById('btnTypeDelivery');
+      const btnPic = document.getElementById('btnTypePickup');
+      const addrGroup = document.getElementById('addressGroup');
+      const pickGroup = document.getElementById('pickupNoticeGroup');
+      const delLine = document.getElementById('deliveryFeeLine');
+
+      if (type === 'delivery') {
+        btnDel.classList.add('active');
+        btnPic.classList.remove('active');
+        addrGroup.style.display = 'block';
+        pickGroup.style.display = 'none';
+        delLine.style.display = 'flex';
+      } else {
+        btnPic.classList.add('active');
+        btnDel.classList.remove('active');
+        addrGroup.style.display = 'none';
+        pickGroup.style.display = 'block';
+        delLine.style.display = 'none';
+      }
+    }
+
+    // --- 7. TELEGRAM ORDER DISPATCH & RECEIPT FORMATTING ---
+    function submitTelegramOrder() {
+      if (cart.length === 0) {
+        alert("Savatingiz bo'sh!");
+        return;
+      }
+
+      const nameInput = document.getElementById('custName');
+      const phoneInput = document.getElementById('custPhone');
+      const addrInput = document.getElementById('custAddress');
+      const commInput = document.getElementById('custComment');
+      const payInput = document.querySelector('input[name="payType"]:checked');
+
+      const name = nameInput.value.trim();
+      const phone = phoneInput.value.trim();
+      const address = addrInput.value.trim();
+      const comment = commInput.value.trim();
+      const payType = payInput ? payInput.value : 'Naqd pul';
+
+      if (!name) {
+        alert("Iltimos, ismingizni kiriting!");
+        nameInput.focus();
+        return;
+      }
+
+      if (!phone || phone.length < 9) {
+        alert("Iltimos, telefon raqamingizni to'liq kiriting (+998...)!");
+        phoneInput.focus();
+        return;
+      }
+
+      if (orderType === 'delivery' && !address) {
+        alert("Iltimos, yetkazib berish manzilini kiriting!");
+        addrInput.focus();
+        return;
+      }
+
+      triggerHaptic('success');
+
+      const orderNum = 'SC-' + Math.floor(1000 + Math.random() * 9000);
+      const now = new Date();
+      const timeStr = `${String(now.getDate()).padStart(2,'0')}.${String(now.getMonth()+1).padStart(2,'0')}.${now.getFullYear()}, ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+      let itemsText = "";
+      let grandTotal = 0;
+
+      cart.forEach((it, i) => {
+        const itemSum = it.price * it.qty;
+        grandTotal += itemSum;
+        itemsText += `${i + 1}. ${it.name}\n`;
+        if (it.variantName) itemsText += `   ▫️ Porsiya: ${it.variantName}\n`;
+        if (it.sauce) itemsText += `   ▫️ Quyilgan sous: ${it.sauce}\n`;
+        if (it.drinkFlavor) itemsText += `   ▫️ Ichimlik: ${it.drinkFlavor}\n`;
+        itemsText += `   ▫️ Miqdor: ${it.qty} dona × ${formatUZS(it.price)} = ${formatUZS(itemSum)}\n\n`;
+      });
+
+      const deliveryTypeLabel = orderType === 'delivery' ? '🚚 Yetkazib berish (Dostavka)' : '🛍️ Olib ketish (Amir Temur filiali - Yahyo G\'ulomov ko\'chasi)';
+      const addressLine = orderType === 'delivery' ? `📍 Manzil: ${address}\n` : `📍 Olib ketish joyi: Yahyo G'ulomov ko'chasi (Amir Temur xiyoboni ro'parasi)\n`;
+      const locationLine = detectedLocationUrl ? `🗺️ Aniq Lokatsiya (Xarita): ${detectedLocationUrl}\n` : '';
+      const tgUserLine = telegramUser ? `✈️ Telegram: @${telegramUser.username || 'noma\'lum'} (ID: ${telegramUser.id})\n` : '';
+      const commentLine = comment ? `💬 Izoh: ${comment}\n` : '';
+
+      const receipt = `🍗 YANGI BUYURTMA #${orderNum} — SEOUL CHICK 🇰🇷
+━━━━━━━━━━━━━━━━━━━━
+👤 Mijoz: ${name}
+📞 Tel: ${phone}
+${tgUserLine}🏢 Filial: Amir Temur filiali (Markaziy)
+🛵 Buyurtma turi: ${deliveryTypeLabel}
+${addressLine}${locationLine}💳 To'lov turi: ${payType}
+${commentLine}⏰ Vaqt: ${timeStr}
+━━━━━━━━━━━━━━━━━━━━
+📋 BUYURTMA TARKIBI:
+
+${itemsText}━━━━━━━━━━━━━━━━━━━━
+💰 JAMI TO'LOV: ${formatUZS(grandTotal)}
+(Yetkazish narxi Yandex bo'yicha)
+
+📍 Toshkent, Yahyo G'ulomov ko'chasi (Amir Temur)
+💬 Admin / Yordam: @Jacob_media`;
+
+      window.lastOrderReceipt = receipt;
+
+      // Real-time Firebase & Admin Panel Save
+      if (window.SeoulChickDB) {
+        window.SeoulChickDB.saveOrder({
+          orderNum: orderNum,
+          name: name,
+          phone: phone,
+          tgUsername: telegramUser?.username || null,
+          tgId: telegramUser?.id || null,
+          locationUrl: detectedLocationUrl,
+          orderType: orderType,
+          address: orderType === 'delivery' ? address : "Amir Temur filiali (Olib ketish)",
+          comment: comment,
+          payType: payType,
+          branch: "Amir Temur",
+          status: "yangi",
+          items: cart.map(it => ({
+            dishId: it.dishId,
+            name: it.name,
+            variantName: it.variantName,
+            sauce: it.sauce,
+            drinkFlavor: it.drinkFlavor,
+            qty: it.qty,
+            price: it.price
+          })),
+          totalPrice: grandTotal,
+          receipt: receipt
+        }).catch(e => console.warn("Firebase save error:", e));
+      }
+
+      // Avtomatik Bot API orqali adminga xabar jo'natish (agar bot server ishlab turgan bo'lsa)
+      try {
+        fetch('/api/order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orderNum: orderNum,
+            name: name,
+            phone: phone,
+            tgUsername: telegramUser?.username || null,
+            locationUrl: detectedLocationUrl,
+            orderType: orderType,
+            address: orderType === 'delivery' ? address : "Amir Temur filiali (Olib ketish)",
+            comment: comment,
+            payType: payType,
+            items: cart,
+            totalPrice: grandTotal,
+            receipt: receipt
+          })
+        }).catch(err => console.log("Bot API xabar yuborish (offline):", err.message));
+      } catch(e) {}
+
+      closeModal('cartModal');
+
+      document.getElementById('successReceiptPreview').innerText = receipt;
+
+      const tgUsername = 'Jacob_media';
+      const encodedMsg = encodeURIComponent(receipt);
+      const tgUrl = `https://t.me/${tgUsername}?text=${encodedMsg}`;
+
+      const linkBtn = document.getElementById('btnSuccessTelegramLink');
+      linkBtn.href = tgUrl;
+
+      if (tg && tg.sendData) {
+        try {
+          tg.sendData(JSON.stringify({
+            orderNum: orderNum,
+            name: name,
+            phone: phone,
+            tgUsername: telegramUser?.username,
+            locationUrl: detectedLocationUrl,
+            branch: "Amir Temur",
+            total: grandTotal,
+            receipt: receipt
+          }));
+        } catch(e) {
+          console.warn("Telegram sendData error:", e);
+        }
+      }
+
+      openModal('successModal');
+      cart = [];
+      updateCartUI();
+
+      setTimeout(() => {
+        if (tg && tg.openTelegramLink) {
+          tg.openTelegramLink(tgUrl);
+        } else {
+          window.open(tgUrl, '_blank');
+        }
+      }, 500);
+    }
+
+    function copyReceiptToClipboard() {
+      if (!window.lastOrderReceipt) return;
+      navigator.clipboard.writeText(window.lastOrderReceipt).then(() => {
+        triggerHaptic('success');
+        const btn = document.getElementById('btnCopyReceiptText');
+        btn.innerText = "✓ Nusxa olindi!";
+        setTimeout(() => { btn.innerText = "📋 Chekni nusxalash"; }, 2500);
+      }).catch(() => {
+        alert("Nusxalashda xatolik yuz berdi. Matnni tanlab nusxalab oling.");
+      });
+    }
+
+    // --- 8. MODAL & TOAST HELPERS ---
+    function openModal(modalId) {
+      const el = document.getElementById(modalId);
+      if (el) {
+        el.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeModal(modalId) {
+      triggerHaptic('light');
+      const el = document.getElementById(modalId);
+      if (el) {
+        el.classList.remove('active');
+        if (!document.querySelector('.modal-overlay.active')) {
+          document.body.style.overflow = '';
+        }
+      }
+    }
+
+    function handleModalOverlayClick(e, modalId) {
+      if (e.target.id === modalId) {
+        closeModal(modalId);
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toastNotice');
+      const msgEl = document.getElementById('toastMsg');
+      if (!toast || !msgEl) return;
+      msgEl.innerText = msg;
+      toast.classList.add('active');
+      setTimeout(() => {
+        toast.classList.remove('active');
+      }, 2600);
+    }
+
+    // --- 9. INITIAL LOAD & PRELOADER TIMING ---
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Telegram User Profile Auto-Detection (Telegram Mini App)
+      if (telegramUser) {
+        const headerTgPill = document.getElementById('headerTgPill');
+        const headerTgName = document.getElementById('headerTgName');
+        if (headerTgPill && headerTgName) {
+          headerTgPill.style.display = 'inline-flex';
+          headerTgName.innerText = telegramUser.first_name + (telegramUser.username ? ` (@${telegramUser.username})` : '');
+        }
+
+        const tgAuthNotice = document.getElementById('tgAuthNotice');
+        const tgProfileName = document.getElementById('tgProfileName');
+        const tgProfileUsername = document.getElementById('tgProfileUsername');
+        const tgUserAvatar = document.getElementById('tgUserAvatar');
+        const custNameInput = document.getElementById('custName');
+
+        if (tgAuthNotice) {
+          tgAuthNotice.style.display = 'flex';
+          if (tgProfileName) tgProfileName.innerText = `${telegramUser.first_name} ${telegramUser.last_name || ''}`;
+          if (tgProfileUsername) tgProfileUsername.innerText = telegramUser.username ? `@${telegramUser.username}` : `ID: ${telegramUser.id}`;
+          if (tgUserAvatar && telegramUser.photo_url) {
+            tgUserAvatar.innerHTML = `<img src="${telegramUser.photo_url}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+          }
+        }
+        if (custNameInput && !custNameInput.value.trim()) {
+          custNameInput.value = `${telegramUser.first_name} ${telegramUser.last_name || ''}`.trim();
+        }
+      }
+
+      if (window.SeoulChickDB) {
+        const localMenu = window.SeoulChickDB.getCustomMenu();
+        if (localMenu && Object.keys(localMenu).length > 0) {
+          applyCustomMenuUpdates(localMenu);
+        } else {
+          renderMenuCards(MENU_ITEMS);
+        }
+      } else {
+        renderMenuCards(MENU_ITEMS);
+      }
+      updateCartUI();
+
+      // 2. Listen to real-time stop-list & custom menu updates from Firebase/Admin
+      if (window.SeoulChickDB) {
+        window.SeoulChickDB.subscribeStopList((stopList) => {
+          renderMenuCards(MENU_ITEMS);
+        });
+
+        window.SeoulChickDB.subscribeMenu((customMap) => {
+          applyCustomMenuUpdates(customMap);
+        });
+      }
+
+      const phoneInput = document.getElementById('custPhone');
+      if (phoneInput) {
+        phoneInput.addEventListener('focus', function() {
+          if (!this.value.startsWith('+998')) {
+            this.value = '+998 ';
+          }
+        });
+      }
+    });
+
+    // Dismiss Preloader smoothly after 1.2s
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const preloader = document.getElementById('preloader');
+        if (preloader) {
+          preloader.classList.add('fade-out');
+          setTimeout(() => { preloader.remove(); }, 650);
+        }
+      }, 1200);
+    });
+  </script>
+</body>
+</html>

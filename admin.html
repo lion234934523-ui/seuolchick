@@ -1,0 +1,2086 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SEOUL CHICK — Admin Boshqaruv Paneli</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23FFFFFF' stroke='%23FF5722' stroke-width='4'/%3E%3Ctext x='50' y='55' font-family='sans-serif' font-weight='900' font-size='24' fill='%23FF5722' text-anchor='middle'%3ESC%3C/text%3E%3C/svg%3E">
+
+  <!-- Firebase v10 Compat CDN -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <!-- Firebase Config & DB Module -->
+  <script src="firebase-config.js"></script>
+
+  <style>
+    :root {
+      --bg-black: #0B0B0B;
+      --bg-dark: #101014;
+      --bg-surface: #16161D;
+      --bg-card: rgba(26, 26, 36, 0.94);
+      --bg-card-hover: rgba(34, 34, 48, 0.98);
+
+      --accent-orange: #FF5722;
+      --accent-orange-glow: rgba(255, 87, 34, 0.35);
+      --accent-amber: #F59E0B;
+      --accent-red: #EF4444;
+      --accent-green: #10B981;
+      --accent-blue: #3B82F6;
+
+      --text-main: #FFFFFF;
+      --text-muted: #9CA3AF;
+      --text-dim: #6B7280;
+
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-card: rgba(255, 255, 255, 0.12);
+
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+
+      --font-display: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-black);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    button {
+      font-family: inherit;
+      border: none;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input, select, textarea {
+      font-family: inherit;
+      outline: none;
+    }
+
+    /* ==========================================================================
+       PIN LOCK SCREEN (HIMOYALANGAN KIRISH)
+       ========================================================================== */
+    .lock-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-black);
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .lock-screen.hidden {
+      display: none;
+    }
+
+    .lock-card {
+      width: 100%;
+      max-width: 380px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      padding: 36px 28px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 40px var(--accent-orange-glow);
+    }
+
+    .lock-logo {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 25px var(--accent-orange-glow);
+    }
+
+    .lock-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .lock-sub {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .pin-input-wrap {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .pin-input {
+      width: 100%;
+      max-width: 200px;
+      height: 52px;
+      text-align: center;
+      font-size: 1.8rem;
+      letter-spacing: 0.35em;
+      font-weight: 800;
+      background: rgba(0, 0, 0, 0.4);
+      border: 2px solid var(--border-card);
+      border-radius: var(--radius-md);
+      color: #FFFFFF;
+      transition: all 0.25s ease;
+    }
+
+    .pin-input:focus {
+      border-color: var(--accent-orange);
+      box-shadow: 0 0 20px var(--accent-orange-glow);
+    }
+
+    .btn-unlock {
+      width: 100%;
+      padding: 14px;
+      border-radius: var(--radius-full);
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));
+      color: #FFFFFF;
+      font-weight: 800;
+      font-size: 1rem;
+      transition: all 0.25s ease;
+      box-shadow: 0 6px 20px var(--accent-orange-glow);
+    }
+
+    .btn-unlock:hover {
+      filter: brightness(1.1);
+      transform: translateY(-2px);
+    }
+
+    .lock-hint {
+      margin-top: 18px;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+    }
+
+    /* ==========================================================================
+       MAIN APP LAYOUT
+       ========================================================================== */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(16, 16, 20, 0.94);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px 20px;
+    }
+
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo-small {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px var(--accent-orange-glow);
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-admin {
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));
+      color: #FFFFFF;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .header-center-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-card);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .status-pill:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .dot-live {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+      animation: pulseDot 2s infinite ease-in-out;
+    }
+
+    .dot-offline {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-amber);
+      box-shadow: 0 0 8px var(--accent-amber);
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-header {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-card);
+      color: var(--text-main);
+      transition: all 0.2s ease;
+    }
+
+    .btn-header:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .btn-audio.active {
+      color: #34D399;
+      border-color: rgba(52, 211, 153, 0.35);
+      background: rgba(52, 211, 153, 0.1);
+    }
+
+    /* Container & Layout */
+    .admin-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px 20px 80px;
+    }
+
+    /* Metric KPI Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 87, 34, 0.4);
+    }
+
+    .kpi-icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      background: rgba(255, 87, 34, 0.12);
+      border: 1px solid rgba(255, 87, 34, 0.25);
+    }
+
+    .kpi-val {
+      font-family: var(--font-display);
+      font-size: 1.45rem;
+      font-weight: 900;
+      line-height: 1.1;
+      color: #FFFFFF;
+    }
+
+    .kpi-lbl {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-top: 4px;
+    }
+
+    /* Navigation Tabs */
+    .tabs-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 12px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: var(--radius-full);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: transparent;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      color: #FFFFFF;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .tab-btn.active {
+      color: #FFFFFF;
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));
+      box-shadow: 0 4px 16px var(--accent-orange-glow);
+    }
+
+    .tab-counter {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 2px 7px;
+      border-radius: var(--radius-full);
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+
+    /* Filter Bar for Orders */
+    .orders-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .filter-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .filter-pill {
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+    }
+
+    .filter-pill:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #FFFFFF;
+    }
+
+    .filter-pill.active {
+      background: #FFFFFF;
+      color: #000000;
+      border-color: #FFFFFF;
+    }
+
+    .search-box {
+      position: relative;
+      min-width: 260px;
+    }
+
+    .search-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-full);
+      padding: 8px 16px 8px 38px;
+      color: #FFFFFF;
+      font-size: 0.85rem;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-orange);
+    }
+
+    .search-icon-abs {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+    }
+
+    /* Orders Grid & Cards */
+    .orders-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 900px) {
+      .orders-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1280px) {
+      .orders-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .order-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .order-card.status-yangi {
+      border-color: rgba(255, 87, 34, 0.6);
+      box-shadow: 0 0 20px rgba(255, 87, 34, 0.2);
+    }
+
+    .order-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 10px;
+    }
+
+    .order-num {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #FFFFFF;
+    }
+
+    .order-time {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .order-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .status-badge-yangi { background: rgba(255, 87, 34, 0.2); color: #FF7043; border: 1px solid rgba(255, 87, 34, 0.4); }
+    .status-badge-tayyorlanmoqda { background: rgba(245, 158, 11, 0.2); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .status-badge-yetkazilmoqda { background: rgba(59, 130, 246, 0.2); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.4); }
+    .status-badge-bajarildi { background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .status-badge-bekor { background: rgba(239, 68, 68, 0.2); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+
+    .customer-info-box {
+      margin-bottom: 14px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .cust-name-phone {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .cust-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #FFFFFF;
+    }
+
+    .cust-phone-link {
+      font-size: 0.85rem;
+      color: var(--accent-amber);
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .cust-phone-link:hover {
+      text-decoration: underline;
+    }
+
+    .cust-address {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+      margin-top: 2px;
+    }
+
+    .order-items-list {
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 180px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .order-dish-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.85rem;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+      padding-bottom: 4px;
+    }
+
+    .dish-info-sub {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
+
+    .dish-qty-price {
+      font-weight: 700;
+      white-space: nowrap;
+      text-align: right;
+    }
+
+    .order-total-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 10px;
+      margin-bottom: 14px;
+    }
+
+    .total-title {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .total-sum {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #FFFFFF;
+    }
+
+    .order-actions-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .btn-action-status {
+      flex: 1;
+      min-width: 90px;
+      padding: 7px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.08);
+      color: #FFFFFF;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .btn-action-status:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+    }
+
+    .btn-action-del {
+      background: rgba(239, 68, 68, 0.15);
+      color: #F87171;
+      padding: 7px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .btn-action-del:hover {
+      background: rgba(239, 68, 68, 0.3);
+    }
+
+    /* Stop-list & Menu Tab */
+    .menu-mgmt-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .menu-mgmt-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .menu-mgmt-card.is-stopped {
+      opacity: 0.6;
+      border-color: rgba(239, 68, 68, 0.4);
+      background: rgba(30, 20, 20, 0.9);
+    }
+
+    .menu-mgmt-img {
+      width: 60px;
+      height: 60px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      background: #202028;
+      flex-shrink: 0;
+    }
+
+    .menu-mgmt-info {
+      flex: 1;
+    }
+
+    .menu-mgmt-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #FFFFFF;
+    }
+
+    .menu-mgmt-price {
+      font-size: 0.8rem;
+      color: var(--accent-amber);
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .switch-toggle {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .switch-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: rgba(255, 255, 255, 0.2);
+      transition: .3s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--accent-green);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    /* Settings Tab */
+    .settings-panel {
+      max-width: 720px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      padding: 30px;
+    }
+
+    .settings-group {
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .settings-group:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .settings-group-title {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: #FFFFFF;
+    }
+
+    .settings-group-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.45;
+    }
+
+    .form-field {
+      margin-bottom: 14px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-muted);
+    }
+
+    .form-input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      color: #FFFFFF;
+      font-size: 0.9rem;
+    }
+
+    .form-input:focus {
+      border-color: var(--accent-orange);
+    }
+
+    .btn-save-settings {
+      padding: 12px 24px;
+      border-radius: var(--radius-full);
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));
+      color: #FFFFFF;
+      font-weight: 800;
+      font-size: 0.95rem;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 16px var(--accent-orange-glow);
+    }
+
+    .btn-save-settings:hover {
+      filter: brightness(1.1);
+      transform: translateY(-2px);
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-dim);
+    }
+
+    .empty-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+    }
+
+    /* Modal for Config */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-backdrop.hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       PIN LOCK SCREEN
+       ========================================================================== -->
+  <div id="lockScreen" class="lock-screen">
+    <div class="lock-card">
+      <div class="lock-logo">
+        <svg viewBox="0 0 100 100" width="44" height="44">
+          <circle cx="50" cy="50" r="44" fill="#FFFFFF" stroke="#FF5722" stroke-width="4"/>
+          <text x="50" y="58" font-family="'Outfit', sans-serif" font-weight="900" font-size="28" fill="#FF5722" text-anchor="middle">SC</text>
+        </svg>
+      </div>
+      <h2 class="lock-title">SEOUL CHICK</h2>
+      <p class="lock-sub">Boshqaruv paneliga kirish uchun PIN kodni kiriting</p>
+
+      <div class="pin-input-wrap">
+        <input type="password" id="pinInput" class="pin-input" maxlength="6" placeholder="••••" autofocus onkeydown="if(event.key==='Enter') checkPin()">
+      </div>
+
+      <button class="btn-unlock" onclick="checkPin()">Kirish</button>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       ADMIN APP HEADER
+       ========================================================================== -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand-section">
+        <div class="brand-logo-small">
+          <svg viewBox="0 0 100 100" width="30" height="30">
+            <circle cx="50" cy="50" r="44" fill="#FFFFFF" stroke="#FF5722" stroke-width="4"/>
+            <text x="50" y="58" font-family="'Outfit', sans-serif" font-weight="900" font-size="28" fill="#FF5722" text-anchor="middle">SC</text>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title">
+            SEOUL CHICK
+            <span class="badge-admin">Admin</span>
+          </div>
+          <div style="font-size:0.72rem; color:var(--text-muted);">Filial: Amir Temur, Toshkent</div>
+        </div>
+      </div>
+
+      <div class="header-center-info">
+        <div id="firebaseStatusPill" class="status-pill" onclick="switchTab('settings')">
+          <span id="firebaseStatusDot" class="dot-offline"></span>
+          <span id="firebaseStatusText">Lokal rejim</span>
+        </div>
+        <div style="font-size:0.8rem; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
+          <span>🕒</span>
+          <span id="liveClock">--:--:--</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <a href="https://t.me/Jacob_media" target="_blank" class="btn-header" style="color:#60A5FA; text-decoration:none;" title="Admin / Texnik yordam bilan bog'lanish">
+          <span>💬</span>
+          <span>@Jacob_media</span>
+        </a>
+
+        <button id="btnAudioToggle" class="btn-header btn-audio active" onclick="toggleAudioAlert()" title="Yangi buyurtma kelganda ovozli signal">
+          <span>🔔</span>
+          <span id="audioToggleLabel">Ovoz: Yoqilgan</span>
+        </button>
+
+        <button class="btn-header" onclick="createMockOrder()" title="Test buyurtma yuborish va signalni tekshirish">
+          <span>⚡</span>
+          <span>Test buyurtma</span>
+        </button>
+
+        <a href="index.html" target="_blank" class="btn-header" style="text-decoration:none;">
+          <span>🏪</span>
+          <span>Saytni ochish</span>
+        </a>
+
+        <button class="btn-header" onclick="lockAdmin()" style="color:#F87171;" title="Chiqish">
+          <span>🔒</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       MAIN DASHBOARD CONTAINER
+       ========================================================================== -->
+  <main class="admin-container">
+
+    <!-- KPI STATS -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon-box">💰</div>
+        <div>
+          <div class="kpi-val" id="statRevenue">0 UZS</div>
+          <div class="kpi-lbl">Bugungi tushum</div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon-box">📋</div>
+        <div>
+          <div class="kpi-val" id="statTotalOrders">0</div>
+          <div class="kpi-lbl">Bugungi buyurtmalar</div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon-box" style="background:rgba(255,87,34,0.18);">⚡</div>
+        <div>
+          <div class="kpi-val" id="statPendingOrders" style="color:var(--accent-orange);">0</div>
+          <div class="kpi-lbl">Yangi / Kutilayotgan</div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon-box" style="background:rgba(16,185,129,0.14);">✅</div>
+        <div>
+          <div class="kpi-val" id="statCompletedOrders" style="color:#34D399;">0</div>
+          <div class="kpi-lbl">Yetkazildi / Bajarildi</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TABS NAVIGATION -->
+    <nav class="tabs-nav">
+      <button class="tab-btn active" onclick="switchTab('orders')">
+        <span>📋</span>
+        <span>Buyurtmalar</span>
+        <span class="tab-counter" id="tabCounterOrders">0</span>
+      </button>
+
+      <button class="tab-btn" onclick="switchTab('menu')">
+        <span>🍗</span>
+        <span>Menyu va Stop-list</span>
+        <span class="tab-counter" id="tabCounterStoplist">0</span>
+      </button>
+
+      <button class="tab-btn" onclick="switchTab('settings')">
+        <span>⚙️</span>
+        <span>Firebase va Sozlamalar</span>
+      </button>
+    </nav>
+
+    <!-- ========================================================================
+         TAB 1: ORDERS (BUYURTMALAR)
+         ======================================================================== -->
+    <section id="tabOrders">
+      <!-- Toolbar: Filters & Search -->
+      <div class="orders-toolbar">
+        <div class="filter-pills">
+          <button class="filter-pill active" onclick="filterOrdersByStatus('all', this)">Barchasi</button>
+          <button class="filter-pill" onclick="filterOrdersByStatus('yangi', this)">⚡ Yangi</button>
+          <button class="filter-pill" onclick="filterOrdersByStatus('tayyorlanmoqda', this)">👨‍🍳 Tayyorlanmoqda</button>
+          <button class="filter-pill" onclick="filterOrdersByStatus('yetkazilmoqda', this)">🛵 Yetkazilmoqda</button>
+          <button class="filter-pill" onclick="filterOrdersByStatus('bajarildi', this)">✅ Bajarildi</button>
+          <button class="filter-pill" onclick="filterOrdersByStatus('bekor', this)">✕ Bekor qilindi</button>
+        </div>
+
+        <div class="search-box">
+          <span class="search-icon-abs">🔍</span>
+          <input type="text" id="orderSearchInput" class="search-input" placeholder="Mijoz ismi, tel yoki #SC-..." oninput="handleOrderSearch(this.value)">
+        </div>
+      </div>
+
+      <!-- Orders Stream Grid -->
+      <div id="ordersContainer" class="orders-grid">
+        <!-- Javascript renders order cards here -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyOrdersNotice" class="empty-state" style="display:none;">
+        <div class="empty-icon">📭</div>
+        <div style="font-size:1.1rem; font-weight:700; color:#FFFFFF; margin-bottom:4px;">Buyurtmalar topilmadi</div>
+        <p>Hozircha tanlangan status bo'yicha hech qanday buyurtma mavjud emas.</p>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         TAB 2: MENU & STOP-LIST (STOP-LIST, RASM VA CHEGIRMALAR)
+         ======================================================================== -->
+    <section id="tabMenu" style="display:none;">
+      <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div>
+          <h2 style="font-family:var(--font-display); font-size:1.3rem; font-weight:800;">Menyu, Mahsulotlar va Chegirmalar</h2>
+          <p style="font-size:0.85rem; color:var(--text-muted);">Mahsulot rasmini almashtiring, chegirma o'rnating, stop-listni boshqaring yoki yangi tovar qo'shing.</p>
+        </div>
+        <button class="btn-save-settings" style="padding:10px 22px; font-size:0.88rem; cursor:pointer;" onclick="openAddDishModal()">
+          ➕ Yangi taom qo'shish
+        </button>
+      </div>
+
+      <div id="menuMgmtContainer" class="menu-mgmt-grid">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         TAB 3: SETTINGS (FIREBASE & SOZLAMALAR)
+         ======================================================================== -->
+    <section id="tabSettings" style="display:none;">
+      <div class="settings-panel">
+        <div class="settings-group">
+          <h3 class="settings-group-title">🔥 Firebase Cloud Firestore integratsiyasi</h3>
+          <p class="settings-group-desc">
+            Buyurtmalar va stop-listni bulutli ma'lumotlar bazasida saqlash va real vaqtda yangilash uchun 
+            <a href="https://console.firebase.google.com" target="_blank" style="color:var(--accent-amber); text-decoration:underline;">Firebase Console</a>-dan 
+            olingan kalitlarni kiriting.
+          </p>
+
+          <div class="form-field">
+            <label class="form-label">Firebase API Key</label>
+            <input type="text" id="cfgApiKey" class="form-input" placeholder="AIzaSy...">
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Project ID</label>
+            <input type="text" id="cfgProjectId" class="form-input" placeholder="seoul-chick-uz">
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Auth Domain</label>
+            <input type="text" id="cfgAuthDomain" class="form-input" placeholder="seoul-chick-uz.firebaseapp.com">
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Storage Bucket</label>
+            <input type="text" id="cfgStorageBucket" class="form-input" placeholder="seoul-chick-uz.appspot.com">
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">App ID</label>
+            <input type="text" id="cfgAppId" class="form-input" placeholder="1:123456789:web:abcdef...">
+          </div>
+
+          <div style="display:flex; gap:12px; margin-top:18px;">
+            <button class="btn-save-settings" onclick="saveFirebaseSettings()">💾 Saqlash va Ulanish</button>
+            <button class="btn-header" onclick="resetToLocalMode()">Lokal rejimga qaytarish</button>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3 class="settings-group-title">🔐 Admin PIN kodini o'zgartirish</h3>
+          <p class="settings-group-desc">Panelga kirish xavfsizligi uchun maxfiy kod.</p>
+
+          <div style="display:flex; gap:12px; max-width:320px;">
+            <input type="password" id="newPinInput" class="form-input" maxlength="6" placeholder="Yangi PIN (masalan: 1234)">
+            <button class="btn-header" style="white-space:nowrap;" onclick="changeAdminPin()">O'zgartirish</button>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3 class="settings-group-title" style="color:#F87171;">🗑️ Ma'lumotlarni tozalash</h3>
+          <p class="settings-group-desc">Barcha lokal test buyurtmalar tarixini o'chirib yuborish.</p>
+          <button class="btn-action-del" onclick="clearAllOrdersHistory()">Barcha buyurtmalarni o'chirish</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       MODALS: ADD DISH & EDIT DISH / DISCOUNT
+       ========================================================================== -->
+  <!-- MODAL: ADD NEW DISH -->
+  <div id="addDishModal" class="modal-backdrop hidden" onclick="if(event.target===this) closeAddDishModal()">
+    <div class="admin-modal-card">
+      <div class="admin-modal-header">
+        <h3 class="admin-modal-title">➕ Yangi taom qo'shish</h3>
+        <button class="btn-close-admin-modal" onclick="closeAddDishModal()">&times;</button>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Taom nomi *</label>
+        <input type="text" id="newDishName" class="form-input" placeholder="Masalan: Koreyscha Bulgogi Burger">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Kategoriya *</label>
+        <select id="newDishCategory" class="form-input" style="background:#16161D;">
+          <option value="chicken">Qanotcha va Tovuq (Chicken)</option>
+          <option value="combos">Kombo Setlar (Combos)</option>
+          <option value="fries">Fri va Qo'shimchalar (Fries)</option>
+          <option value="sauces">Sous va Salat (Sauces & Salads)</option>
+          <option value="drinks">Ichimliklar (Drinks)</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Tavsifi (Tarkibi)</label>
+        <textarea id="newDishDesc" class="form-input" rows="2" placeholder="Masalan: Maxsus sous va qarsildoq tovuq bilan..."></textarea>
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+        <div class="form-field">
+          <label class="form-label">Narxi (UZS) *</label>
+          <input type="number" id="newDishPrice" class="form-input" placeholder="45000">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Chegirma (%)</label>
+          <input type="number" id="newDishDiscount" class="form-input" placeholder="0" min="0" max="90">
+        </div>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Rasm yo'li, URL yoki Fayldan yuklash</label>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="newDishImage" class="form-input" placeholder="assets/photo.jpg yoki https://..." oninput="const p=document.getElementById('newDishPreview'); if(p){p.style.display=this.value?'block':'none'; p.querySelector('img').src=this.value;}">
+          <label style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#fff; border-radius:8px; padding:0 12px; display:inline-flex; align-items:center; cursor:pointer; font-size:0.75rem; white-space:nowrap; font-weight:600; transition:all 0.2s;" title="Kompyuter yoki telefondan rasm tanlash">
+            📁 Fayl tanlash
+            <input type="file" accept="image/*" style="display:none;" onchange="handleImageFileUpload(this, 'newDishImage', 'newDishPreview')">
+          </label>
+        </div>
+        <div id="newDishPreview" style="margin-top:8px; display:none;">
+          <img src="" style="width:64px; height:64px; border-radius:8px; object-fit:cover; border:1px solid rgba(255,255,255,0.2);">
+        </div>
+        <div style="font-size:0.75rem; color:var(--text-dim); margin-top:4px;">assets papkasidagi rasm nomi, internet havolasi yoki to'g'ridan-to'g'ri fayl tanlang</div>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Belgi / Beydj (Badge)</label>
+        <input type="text" id="newDishBadge" class="form-input" placeholder="Yangi 🔥, Top Xit, Aksiya">
+      </div>
+      <div style="margin-top:20px; display:flex; gap:10px;">
+        <button class="btn-save-settings" style="flex:1;" onclick="submitNewDish()">Qo'shish va Saqlash</button>
+        <button class="btn-header" onclick="closeAddDishModal()">Bekor qilish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDIT DISH / DISCOUNT / PHOTO -->
+  <div id="editDishModal" class="modal-backdrop hidden" onclick="if(event.target===this) closeEditDishModal()">
+    <div class="admin-modal-card">
+      <div class="admin-modal-header">
+        <h3 class="admin-modal-title">✏️ Taomni tahrirlash va chegirma</h3>
+        <button class="btn-close-admin-modal" onclick="closeEditDishModal()">&times;</button>
+      </div>
+      <input type="hidden" id="editDishId">
+      <div class="form-field">
+        <label class="form-label">Taom nomi</label>
+        <input type="text" id="editDishName" class="form-input" disabled style="opacity:0.8;">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Rasm yo'li, URL yoki Fayldan yuklash</label>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="editDishImage" class="form-input" placeholder="assets/photo.jpg yoki https://..." oninput="const p=document.getElementById('editDishPreview'); if(p){p.style.display=this.value?'block':'none'; p.querySelector('img').src=this.value;}">
+          <label style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#fff; border-radius:8px; padding:0 12px; display:inline-flex; align-items:center; cursor:pointer; font-size:0.75rem; white-space:nowrap; font-weight:600; transition:all 0.2s;" title="Kompyuter yoki telefondan rasm tanlash">
+            📁 Fayl tanlash
+            <input type="file" accept="image/*" style="display:none;" onchange="handleImageFileUpload(this, 'editDishImage', 'editDishPreview')">
+          </label>
+        </div>
+        <div id="editDishPreview" style="margin-top:8px; display:none;">
+          <img src="" style="width:64px; height:64px; border-radius:8px; object-fit:cover; border:1px solid rgba(255,255,255,0.2);">
+        </div>
+        <div style="font-size:0.75rem; color:var(--text-dim); margin-top:4px;">assets/ ichidagi rasm, rasm URL yoki to'g'ridan-to'g'ri kompyuter/telefondan rasm yuklang</div>
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+        <div class="form-field">
+          <label class="form-label">Asosiy narx (UZS)</label>
+          <input type="number" id="editDishPrice" class="form-input" placeholder="45000">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Chegirma (%)</label>
+          <input type="number" id="editDishDiscount" class="form-input" placeholder="0" min="0" max="90">
+        </div>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Beydj (Badge)</label>
+        <input type="text" id="editDishBadge" class="form-input" placeholder="Top Xit 🔥, Aksiya -20%">
+      </div>
+      <div style="margin-top:20px; display:flex; gap:10px;">
+        <button class="btn-save-settings" style="flex:1;" onclick="submitEditDish()">O'zgarishlarni saqlash</button>
+        <button class="btn-header" onclick="closeEditDishModal()">Bekor qilish</button>
+      </div>
+      <div style="margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:0.75rem; color:var(--text-dim);">Ushbu taomni menyudan olib tashlash:</span>
+        <button type="button" class="btn-action-del" style="font-size:0.78rem; padding:8px 14px; background:rgba(239,68,68,0.15); color:#F87171; border:1px solid rgba(239,68,68,0.3); border-radius:6px; font-weight:700; cursor:pointer;" onclick="deleteDishFromModal()">
+          🗑️ Tovarni o'chirish (Удалить товар)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       JAVASCRIPT: LOGIC, REAL-TIME LISTENERS, AUDIO SYNTH
+       ========================================================================== -->
+  <script>
+    // 1. PIN LOCK & AUTHENTICATION (DEFAULT: 0997)
+    function getStoredPin() {
+      const pin = localStorage.getItem('seoul_chick_admin_pin');
+      if (!pin || pin === '7788') {
+        localStorage.setItem('seoul_chick_admin_pin', '0997');
+        return '0997';
+      }
+      return pin;
+    }
+
+    function checkPin() {
+      const entered = document.getElementById('pinInput').value.trim();
+      const currentPin = getStoredPin();
+
+      if (entered === currentPin) {
+        sessionStorage.setItem('seoul_admin_authenticated', '1');
+        document.getElementById('lockScreen').classList.add('hidden');
+        initAdminApp();
+      } else {
+        alert("Noto'g'ri PIN kod! Qaytadan urinib ko'ring.");
+        document.getElementById('pinInput').value = '';
+        document.getElementById('pinInput').focus();
+      }
+    }
+
+    function lockAdmin() {
+      sessionStorage.removeItem('seoul_admin_authenticated');
+      document.getElementById('lockScreen').classList.remove('hidden');
+      document.getElementById('pinInput').value = '';
+    }
+
+    function changeAdminPin() {
+      const val = document.getElementById('newPinInput').value.trim();
+      if (!val || val.length < 4) {
+        alert("PIN kod kamida 4 ta belgidan iborat bo'lishi kerak!");
+        return;
+      }
+      localStorage.setItem('seoul_chick_admin_pin', val);
+      alert("✅ Admin PIN kodi muvaffaqiyatli yangilandi: " + val);
+      document.getElementById('newPinInput').value = '';
+    }
+
+    // 2. WEB AUDIO SYNTHESIZER (3-TONE CHIME ON NEW ORDERS)
+    let audioAlertEnabled = true;
+    let audioCtx = null;
+
+    function playNewOrderChime() {
+      if (!audioAlertEnabled) return;
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+
+        const notes = [523.25, 659.25, 783.99]; // C5, E5, G5 major triad
+        notes.forEach((freq, i) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+
+          const startTime = audioCtx.currentTime + (i * 0.16);
+          gain.gain.setValueAtTime(0.3, startTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.35);
+
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          osc.start(startTime);
+          osc.stop(startTime + 0.36);
+        });
+      } catch (e) {
+        console.warn("Audio chime xatolik:", e);
+      }
+    }
+
+    function toggleAudioAlert() {
+      audioAlertEnabled = !audioAlertEnabled;
+      const btn = document.getElementById('btnAudioToggle');
+      const lbl = document.getElementById('audioToggleLabel');
+      if (audioAlertEnabled) {
+        btn.classList.add('active');
+        lbl.innerText = "Ovoz: Yoqilgan";
+        playNewOrderChime();
+      } else {
+        btn.classList.remove('active');
+        lbl.innerText = "Ovoz: O'chirilgan";
+      }
+    }
+
+    // 3. STATE & DATA
+    let allOrders = [];
+    let currentFilterStatus = 'all';
+    let searchQuery = '';
+    let knownOrderIds = new Set();
+    let isInitialLoad = true;
+
+    // MENU DATABASE (FOR STOPLIST MANAGEMENT)
+    const ADMIN_MENU_ITEMS = [
+      { id: 'wings', name: "Qanotchalar (Крылышки)", price: "33 000 - 59 000 UZS", image: "assets/seoul-chick-wings.jpg" },
+      { id: 'chicken_thigh', name: "Tovuq son (Куриное бедро)", price: "49 000 - 65 000 UZS", image: "assets/seoul-chick-thighs.jpg" },
+      { id: 'combo_mini', name: "COMBO MINI", price: "69 000 UZS", image: "assets/combo-mini.jpg" },
+      { id: 'combo_max', name: "COMBO MAX", price: "79 000 UZS", image: "assets/combo-max.jpg" },
+      { id: 'combo_dostlar', name: "COMBO DO'STLAR", price: "159 000 UZS", image: "assets/combo-dostlar.jpg" },
+      { id: 'combo_oila', name: "COMBO OILA (Семейный)", price: "299 000 UZS", image: "assets/combo-oila.jpg" },
+      { id: 'fries_classic', name: "Fri (Картофель фри)", price: "12 000 - 20 000 UZS", image: "assets/product-fri-classic.png" },
+      { id: 'fries_farsh', name: "Fri farsh (Фри с фаршем)", price: "35 000 - 49 000 UZS", image: "assets/product-fri-farsh.png" },
+      { id: 'fries_italiano', name: "Fri Italiano (Фри Итальяно)", price: "35 000 - 49 000 UZS", image: "assets/product-fri-italiano.png" },
+      { id: 'salad_coleslaw', name: "Coleslaw Salat", price: "10 000 UZS", image: "assets/product-salat-coleslaw.png" },
+      { id: 'heinz_ketchup', name: "Heinz Ketchup", price: "5 000 UZS", image: "assets/product-heinz-ketchup.png" },
+      { id: 'heinz_mustard', name: "Heinz Classic Mustard", price: "5 000 UZS", image: "assets/product-heinz-mustard.png" },
+      { id: 'heinz_garlic', name: "Heinz Garlic Sauce", price: "5 000 UZS", image: "assets/product-heinz-garlic.png" },
+      { id: 'drink_coca_cola', name: "Coca-Cola Classic", price: "10 000 - 20 000 UZS", image: "assets/drink-coca-cola.jpg" },
+      { id: 'drink_cola_zero', name: "Coca-Cola Zero Sugar", price: "10 000 - 12 000 UZS", image: "assets/drink-cola-zero.jpg" },
+      { id: 'drink_fanta', name: "Fanta Apelsin", price: "10 000 - 16 000 UZS", image: "assets/drink-fanta.jpg" },
+      { id: 'drink_sprite', name: "Sprite Limon-Laym", price: "10 000 - 16 000 UZS", image: "assets/drink-sprite.jpg" },
+      { id: 'drink_cappy', name: "Cappy tabiiy sharbat", price: "15 000 - 25 000 UZS", image: "assets/drink-cappy.jpg" },
+      { id: 'drink_pulpy', name: "Pulpy (Палпи) meva bo'lakli", price: "15 000 - 25 000 UZS", image: "assets/drink-pulpy.jpg" },
+      { id: 'drink_lychee_soda', name: "Muzdek Lichi Gazli Ichimlik", price: "15 000 UZS", image: "assets/drink-lychee.jpg" },
+      { id: 'drink_mojito_craft', name: "Alkogolsiz Moxito (Mojito Craft Mix)", price: "18 000 UZS", image: "assets/drink-mojito.jpg" },
+      { id: 'drink_bonaqua', name: "Bonaqua suv", price: "5 000 - 8 000 UZS", image: "assets/drink-bonaqua.jpg" }
+    ];
+
+    // 4. APP INITIALIZATION
+    function initAdminApp() {
+      updateLiveClock();
+      setInterval(updateLiveClock, 1000);
+      updateConnectionStatusUI();
+      renderMenuManagement();
+      fillSettingsForm();
+
+      // Subscribe to real-time orders
+      if (window.SeoulChickDB) {
+        window.SeoulChickDB.subscribeOrders((orders) => {
+          handleIncomingOrders(orders);
+        });
+
+        window.SeoulChickDB.subscribeStopList((stopList) => {
+          updateStopListUI(stopList);
+        });
+
+        window.SeoulChickDB.subscribeMenu((menuMap) => {
+          renderMenuManagement();
+        });
+      }
+    }
+
+    function updateLiveClock() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('ru-RU');
+      const el = document.getElementById('liveClock');
+      if (el) el.innerText = timeStr;
+    }
+
+    function updateConnectionStatusUI() {
+      const isLive = window.SeoulChickDB?.isConnected();
+      const dot = document.getElementById('firebaseStatusDot');
+      const text = document.getElementById('firebaseStatusText');
+
+      if (isLive) {
+        dot.className = 'dot-live';
+        text.innerText = 'Firebase: Jonli (Online)';
+      } else {
+        dot.className = 'dot-offline';
+        text.innerText = 'Lokal Rejim (Offline)';
+      }
+    }
+
+    // 5. ORDERS HANDLING & AUDIO ALERTS
+    function handleIncomingOrders(orders) {
+      // Check if there is a newly arrived order
+      let hasNewOrder = false;
+      orders.forEach(o => {
+        const id = o.id || o.orderNum;
+        if (!knownOrderIds.has(id)) {
+          knownOrderIds.add(id);
+          if (!isInitialLoad && o.status === 'yangi') {
+            hasNewOrder = true;
+          }
+        }
+      });
+
+      if (hasNewOrder) {
+        playNewOrderChime();
+      }
+
+      isInitialLoad = false;
+      allOrders = orders;
+      updateKpis();
+      renderOrders();
+    }
+
+    function updateKpis() {
+      const totalCount = allOrders.length;
+      const pendingCount = allOrders.filter(o => o.status === 'yangi').length;
+      const completedCount = allOrders.filter(o => o.status === 'bajarildi').length;
+      
+      const revenue = allOrders
+        .filter(o => o.status !== 'bekor')
+        .reduce((sum, o) => sum + (Number(o.totalPrice || o.total || 0)), 0);
+
+      document.getElementById('statTotalOrders').innerText = totalCount;
+      document.getElementById('statPendingOrders').innerText = pendingCount;
+      document.getElementById('statCompletedOrders').innerText = completedCount;
+      document.getElementById('statRevenue').innerText = Number(revenue).toLocaleString('ru-RU') + ' UZS';
+      document.getElementById('tabCounterOrders').innerText = pendingCount > 0 ? `${pendingCount} yangi` : totalCount;
+    }
+
+    function renderOrders() {
+      const container = document.getElementById('ordersContainer');
+      const emptyNotice = document.getElementById('emptyOrdersNotice');
+      if (!container) return;
+
+      let filtered = allOrders;
+
+      if (currentFilterStatus !== 'all') {
+        filtered = filtered.filter(o => o.status === currentFilterStatus);
+      }
+
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        filtered = filtered.filter(o => 
+          (o.orderNum && o.orderNum.toLowerCase().includes(q)) ||
+          (o.name && o.name.toLowerCase().includes(q)) ||
+          (o.phone && o.phone.toLowerCase().includes(q)) ||
+          (o.address && o.address.toLowerCase().includes(q))
+        );
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = '';
+        emptyNotice.style.display = 'block';
+        return;
+      }
+
+      emptyNotice.style.display = 'none';
+      container.innerHTML = '';
+
+      filtered.forEach(order => {
+        const orderId = order.id || order.orderNum;
+        const total = Number(order.totalPrice || order.total || 0).toLocaleString('ru-RU') + ' UZS';
+        const status = order.status || 'yangi';
+
+        // Format status label & class
+        let statusClass = `status-badge-${status}`;
+        let statusLabel = status;
+        if (status === 'yangi') statusLabel = '⚡ Yangi buyurtma';
+        else if (status === 'tayyorlanmoqda') statusLabel = '👨‍🍳 Tayyorlanmoqda';
+        else if (status === 'yetkazilmoqda') statusLabel = '🛵 Kuryerda';
+        else if (status === 'bajarildi') statusLabel = '✅ Bajarildi';
+        else if (status === 'bekor') statusLabel = '✕ Bekor qilindi';
+
+        // Dishes items list
+        let itemsHtml = '';
+        if (Array.isArray(order.items)) {
+          order.items.forEach(it => {
+            const itSum = (Number(it.price || 0) * Number(it.qty || 1)).toLocaleString('ru-RU');
+            let metaArr = [];
+            if (it.variantName) metaArr.push(it.variantName);
+            if (it.sauce) metaArr.push(`Sous: ${it.sauce}`);
+            if (it.drinkFlavor) metaArr.push(it.drinkFlavor);
+
+            itemsHtml += `
+              <div class="order-dish-row">
+                <div>
+                  <div style="font-weight:700;">${it.name || 'Taom'}</div>
+                  ${metaArr.length ? `<div class="dish-info-sub">${metaArr.join(' • ')}</div>` : ''}
+                </div>
+                <div class="dish-qty-price">${it.qty || 1} dona × ${itSum}</div>
+              </div>
+            `;
+          });
+        }
+
+        const dateStr = order.createdAt ? 
+          (typeof order.createdAt === 'string' ? order.createdAt.replace('T', ' ').slice(0, 16) : 'Hozirgina') : 
+          'Hozirgina';
+
+        const card = document.createElement('div');
+        card.className = `order-card status-${status}`;
+        card.innerHTML = `
+          <div>
+            <div class="order-card-header">
+              <div>
+                <div class="order-num">#${order.orderNum || orderId.slice(0,8)}</div>
+                <div class="order-time">🕒 ${dateStr}</div>
+              </div>
+              <span class="order-status-badge ${statusClass}">${statusLabel}</span>
+            </div>
+
+            <div class="customer-info-box">
+              <div class="cust-name-phone">
+                <span class="cust-name">👤 ${order.name || 'Mijoz'}</span>
+                <a href="tel:${order.phone}" class="cust-phone-link">📞 ${order.phone || ''}</a>
+              </div>
+              ${order.tgUsername ? `
+                <div style="font-size:0.82rem; margin-top:2px;">
+                  <a href="https://t.me/${order.tgUsername}" target="_blank" style="color:#60A5FA; text-decoration:none; font-weight:700;">
+                    ✈️ @${order.tgUsername} ${order.tgId ? `<span style="color:var(--text-dim); font-size:0.72rem;">(ID: ${order.tgId})</span>` : ''}
+                  </a>
+                </div>
+              ` : (order.tgId ? `<div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">TG ID: ${order.tgId}</div>` : '')}
+              <div class="cust-address">
+                ${order.orderType === 'pickup' ? 
+                  '🛍️ <strong>Olib ketish</strong> (Amir Temur filiali)' : 
+                  `🚚 <strong>Yetkazish:</strong> ${order.address || 'Manzil ko\'rsatilmagan'}`
+                }
+              </div>
+              ${order.locationUrl ? `
+                <div style="margin-top:6px;">
+                  <a href="${order.locationUrl}" target="_blank" style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:6px; background:#10B981; color:#FFFFFF; font-size:0.78rem; font-weight:700; text-decoration:none; box-shadow:0 2px 8px rgba(16,185,129,0.35);">
+                    📍 Xaritada ochish (Google / Yandex)
+                  </a>
+                </div>
+              ` : ''}
+              ${order.comment ? `<div style="font-size:0.75rem; color:#FBBF24; margin-top:4px;">💬 "${order.comment}"</div>` : ''}
+              <div style="font-size:0.72rem; color:var(--text-dim); margin-top:4px;">
+                💳 To'lov: <strong>${order.payType || 'Naqd'}</strong>
+              </div>
+            </div>
+
+            <div class="order-items-list">
+              ${itemsHtml || '<div style="font-size:0.8rem; color:var(--text-dim);">Tarkib yo\'q</div>'}
+            </div>
+          </div>
+
+          <div>
+            <div class="order-total-bar">
+              <span class="total-title">Jami to'lov:</span>
+              <span class="total-sum">${total}</span>
+            </div>
+
+            <div class="order-actions-row">
+              ${status === 'yangi' ? `
+                <button class="btn-action-status" style="background:#F59E0B; color:#000;" onclick="changeOrderStatus('${orderId}', 'tayyorlanmoqda')">Qabul qilish</button>
+              ` : ''}
+
+              ${status === 'tayyorlanmoqda' ? `
+                <button class="btn-action-status" style="background:#3B82F6;" onclick="changeOrderStatus('${orderId}', 'yetkazilmoqda')">Kuryerga berish</button>
+              ` : ''}
+
+              ${status !== 'bajarildi' && status !== 'bekor' ? `
+                <button class="btn-action-status" style="background:#10B981;" onclick="changeOrderStatus('${orderId}', 'bajarildi')">Bajarildi ✓</button>
+              ` : ''}
+
+              ${status !== 'bekor' && status !== 'bajarildi' ? `
+                <button class="btn-action-status" style="background:rgba(239,68,68,0.2); color:#F87171;" onclick="changeOrderStatus('${orderId}', 'bekor')">Bekor qilish</button>
+              ` : ''}
+
+              <button class="btn-action-del" onclick="deleteOrder('${orderId}')" title="O'chirish">🗑️</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function filterOrdersByStatus(status, btn) {
+      currentFilterStatus = status;
+      document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderOrders();
+    }
+
+    function handleOrderSearch(val) {
+      searchQuery = val.trim();
+      renderOrders();
+    }
+
+    async function changeOrderStatus(orderId, newStatus) {
+      if (window.SeoulChickDB) {
+        await window.SeoulChickDB.updateStatus(orderId, newStatus);
+      }
+    }
+
+    async function deleteOrder(orderId) {
+      if (confirm("Ushbu buyurtmani o'chirmoqchimisiz?")) {
+        if (window.SeoulChickDB) {
+          await window.SeoulChickDB.deleteOrder(orderId);
+        }
+      }
+    }
+
+    function clearAllOrdersHistory() {
+      if (confirm("Diqqat! Barcha lokal buyurtmalar tarixi o'chiriladi. Rozimisiz?")) {
+        localStorage.removeItem('seoul_chick_orders');
+        allOrders = [];
+        knownOrderIds.clear();
+        updateKpis();
+        renderOrders();
+        alert("Buyurtmalar tozalandi.");
+      }
+    }
+
+    // 6. MENU & STOP-LIST MANAGEMENT (WITH IMAGE, DISCOUNT & CRUD)
+    function renderMenuManagement() {
+      const container = document.getElementById('menuMgmtContainer');
+      if (!container) return;
+      const stopList = window.SeoulChickDB?.getStopList() || {};
+      const customMenu = window.SeoulChickDB?.getCustomMenu() || {};
+
+      let stoppedCount = 0;
+      container.innerHTML = '';
+
+      // Merge base dishes with overrides and newly added items
+      const mergedDishes = [];
+      const deletedDishes = [];
+      const seenIds = new Set();
+
+      ADMIN_MENU_ITEMS.forEach(baseDish => {
+        seenIds.add(baseDish.id);
+        const override = customMenu[baseDish.id] || {};
+        const combined = { ...baseDish, ...override, isBase: true };
+        if (override.deleted) {
+          deletedDishes.push(combined);
+        } else {
+          mergedDishes.push(combined);
+        }
+      });
+
+      Object.keys(customMenu).forEach(id => {
+        if (!seenIds.has(id)) {
+          const item = customMenu[id];
+          const combined = { ...item, isBase: false };
+          if (item.deleted) {
+            deletedDishes.push(combined);
+          } else {
+            mergedDishes.push(combined);
+          }
+        }
+      });
+
+      mergedDishes.forEach(dish => {
+        const isStopped = !!stopList[dish.id];
+        if (isStopped) stoppedCount++;
+
+        const currentImage = dish.customImage || dish.image || 'assets/seoul-chick-thighs.jpg';
+        const discount = Number(dish.discountPercent || 0);
+
+        let priceText = '';
+        if (typeof dish.price === 'number') {
+          if (discount > 0) {
+            const finalP = Math.round(dish.price * (1 - discount/100));
+            priceText = `<span style="text-decoration:line-through; color:var(--text-dim); font-size:0.75rem;">${dish.price.toLocaleString('ru-RU')}</span> <strong style="color:#FF5722;">${finalP.toLocaleString('ru-RU')} UZS</strong> <span style="background:#EF4444; color:#fff; font-size:0.65rem; padding:1px 5px; border-radius:4px; font-weight:800;">-${discount}%</span>`;
+          } else {
+            priceText = `<strong>${dish.price.toLocaleString('ru-RU')} UZS</strong>`;
+          }
+        } else {
+          priceText = `<strong>${dish.price}</strong> ${discount > 0 ? `<span style="background:#EF4444; color:#fff; font-size:0.65rem; padding:1px 5px; border-radius:4px; font-weight:800;">-${discount}%</span>` : ''}`;
+        }
+
+        const badgeText = dish.badge ? `<span style="font-size:0.65rem; padding:2px 6px; border-radius:4px; background:rgba(255,87,34,0.2); color:#FF7043; border:1px solid rgba(255,87,34,0.3); margin-left:4px;">${dish.badge}</span>` : '';
+
+        const card = document.createElement('div');
+        card.className = `menu-mgmt-card ${isStopped ? 'is-stopped' : ''}`;
+        card.id = `menuCard_${dish.id}`;
+        card.innerHTML = `
+          <img src="${currentImage}" alt="${dish.name}" class="menu-mgmt-img" onerror="this.src='assets/seoul-chick-thighs.jpg'">
+          <div class="menu-mgmt-info">
+            <div class="menu-mgmt-title">${dish.name} ${badgeText}</div>
+            <div class="menu-mgmt-price">${priceText}</div>
+            <div style="font-size:0.75rem; color:${isStopped ? '#F87171' : '#34D399'}; font-weight:700; margin:3px 0 6px;">
+              ${isStopped ? '✕ Stop-listda (Tugagan)' : '✓ Sotuvda mavjud'}
+            </div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;">
+              <button class="btn-action-status" style="font-size:0.75rem; padding:5px 10px; background:rgba(255,255,255,0.08);" onclick="openEditDishModal('${dish.id}')">
+                ✏️ Tahrirlash
+              </button>
+              <button class="btn-action-del" style="font-size:0.75rem; padding:5px 10px; background:rgba(239,68,68,0.15); color:#EF4444; border:1px solid rgba(239,68,68,0.3); border-radius:6px; font-weight:700; cursor:pointer;" onclick="deleteDishItem('${dish.id}', '${dish.name.replace(/'/g, "\\'")}')" title="Ushbu tovarni butunlay o'chirish">
+                🗑️ O'chirish
+              </button>
+            </div>
+          </div>
+          <label class="switch-toggle" title="Sotuvda / Stop-list">
+            <input type="checkbox" ${!isStopped ? 'checked' : ''} onchange="toggleDishStopList('${dish.id}', !this.checked)">
+            <span class="slider"></span>
+          </label>
+        `;
+        container.appendChild(card);
+      });
+
+      if (deletedDishes.length > 0) {
+        const delBox = document.createElement('div');
+        delBox.style.cssText = 'grid-column: 1 / -1; margin-top: 24px; padding: 16px; background: rgba(239,68,68,0.06); border: 1px dashed rgba(239,68,68,0.35); border-radius: 12px;';
+        delBox.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <div style="font-weight:700; color:#F87171; font-size:0.88rem;">🗑️ Menyudan o'chirilgan tovarlar (${deletedDishes.length} ta)</div>
+            <span style="font-size:0.75rem; color:var(--text-dim);">Xohlagan vaqtda qayta tiklashingiz mumkin</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            ${deletedDishes.map(d => `
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:rgba(0,0,0,0.3); border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <img src="${d.customImage || d.image || 'assets/seoul-chick-thighs.jpg'}" style="width:36px; height:36px; border-radius:6px; object-fit:cover;">
+                  <span style="font-weight:600; font-size:0.82rem; color:var(--text-dim); text-decoration:line-through;">${d.name}</span>
+                </div>
+                <button class="btn-action-status" style="font-size:0.75rem; padding:5px 12px; background:#10B981; color:#fff; font-weight:700; border-radius:6px;" onclick="restoreDishItem('${d.id}')">
+                  ♻️ Qayta tiklash
+                </button>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        container.appendChild(delBox);
+      }
+
+      document.getElementById('tabCounterStoplist').innerText = stoppedCount > 0 ? `${stoppedCount} stop` : '0';
+    }
+
+    async function toggleDishStopList(dishId, shouldStop) {
+      if (window.SeoulChickDB) {
+        await window.SeoulChickDB.setStopList(dishId, shouldStop);
+        renderMenuManagement();
+      }
+    }
+
+    function updateStopListUI(stopList) {
+      renderMenuManagement();
+    }
+
+    // MODAL HANDLERS FOR ADD / EDIT DISHES
+    function handleImageFileUpload(input, targetInputId, previewContainerId) {
+      const file = input.files?.[0];
+      if (!file) return;
+      if (file.size > 4 * 1024 * 1024) {
+        alert("Rasm hajmi juda katta! Iltimos, 4MB dan kichik rasm tanlang.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const dataUrl = e.target.result;
+        const targetInput = document.getElementById(targetInputId);
+        if (targetInput) targetInput.value = dataUrl;
+        const previewEl = document.getElementById(previewContainerId);
+        if (previewEl) {
+          previewEl.style.display = 'block';
+          const img = previewEl.querySelector('img');
+          if (img) img.src = dataUrl;
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function openAddDishModal() {
+      document.getElementById('newDishName').value = '';
+      document.getElementById('newDishDesc').value = '';
+      document.getElementById('newDishPrice').value = '';
+      document.getElementById('newDishDiscount').value = '';
+      document.getElementById('newDishImage').value = '';
+      document.getElementById('newDishBadge').value = '';
+      const newPrev = document.getElementById('newDishPreview');
+      if (newPrev) newPrev.style.display = 'none';
+      document.getElementById('addDishModal').classList.remove('hidden');
+    }
+
+    function closeAddDishModal() {
+      document.getElementById('addDishModal').classList.add('hidden');
+    }
+
+    function closeEditDishModal() {
+      document.getElementById('editDishModal').classList.add('hidden');
+    }
+
+    function openEditDishModal(dishId) {
+      const customMenu = window.SeoulChickDB?.getCustomMenu() || {};
+      const dish = customMenu[dishId] || ADMIN_MENU_ITEMS.find(d => d.id === dishId);
+      if (!dish) return;
+
+      document.getElementById('editDishId').value = dish.id;
+      document.getElementById('editDishName').value = dish.name;
+      const currentImg = dish.customImage || dish.image || '';
+      document.getElementById('editDishImage').value = currentImg;
+      const previewEl = document.getElementById('editDishPreview');
+      if (previewEl) {
+        if (currentImg) {
+          previewEl.style.display = 'block';
+          previewEl.querySelector('img').src = currentImg;
+        } else {
+          previewEl.style.display = 'none';
+        }
+      }
+      document.getElementById('editDishDiscount').value = dish.discountPercent || 0;
+      document.getElementById('editDishBadge').value = dish.badge || '';
+
+      let pVal = '';
+      if (typeof dish.price === 'number') pVal = dish.price;
+      else if (dish.rawPrice) pVal = dish.rawPrice;
+      document.getElementById('editDishPrice').value = pVal;
+
+      document.getElementById('editDishModal').classList.remove('hidden');
+    }
+
+    async function submitNewDish() {
+      const name = document.getElementById('newDishName').value.trim();
+      const cat = document.getElementById('newDishCategory').value;
+      const desc = document.getElementById('newDishDesc').value.trim();
+      const price = parseInt(document.getElementById('newDishPrice').value);
+      const discount = parseInt(document.getElementById('newDishDiscount').value) || 0;
+      const image = document.getElementById('newDishImage').value.trim() || 'assets/seoul-chick-thighs.jpg';
+      const badge = document.getElementById('newDishBadge').value.trim() || 'Yangi 🔥';
+
+      if (!name || !price) {
+        alert("Iltimos, taom nomi va narxini kiriting!");
+        return;
+      }
+
+      const id = 'custom_' + Date.now();
+      const newDish = {
+        id: id,
+        name: name,
+        category: cat,
+        desc: desc,
+        price: price,
+        rawPrice: price,
+        discountPercent: discount,
+        image: image,
+        customImage: image,
+        badge: badge,
+        isCustom: true,
+        variants: [{ name: "Standart porsiya", price: price, default: true }]
+      };
+
+      if (window.SeoulChickDB) {
+        await window.SeoulChickDB.saveDish(newDish);
+      }
+      closeAddDishModal();
+      renderMenuManagement();
+      alert("🎉 Yangi taom muvaffaqiyatli menyuga qo'shildi!");
+    }
+
+    async function submitEditDish() {
+      const id = document.getElementById('editDishId').value;
+      const img = document.getElementById('editDishImage').value.trim();
+      const discount = parseInt(document.getElementById('editDishDiscount').value) || 0;
+      const badge = document.getElementById('editDishBadge').value.trim();
+      const priceVal = parseInt(document.getElementById('editDishPrice').value) || null;
+
+      const customMenu = window.SeoulChickDB?.getCustomMenu() || {};
+      const baseDish = ADMIN_MENU_ITEMS.find(d => d.id === id) || {};
+      const existing = customMenu[id] || {};
+
+      const updated = {
+        ...baseDish,
+        ...existing,
+        id: id,
+        name: baseDish.name || existing.name,
+        customImage: img || existing.customImage || baseDish.image,
+        image: img || existing.image || baseDish.image,
+        discountPercent: discount,
+        badge: badge
+      };
+
+      if (priceVal) {
+        updated.price = priceVal;
+        updated.rawPrice = priceVal;
+        if (updated.variants && updated.variants.length > 0) {
+          updated.variants[0].price = priceVal;
+        }
+      }
+
+      if (window.SeoulChickDB) {
+        await window.SeoulChickDB.saveDish(updated);
+      }
+      closeEditDishModal();
+      renderMenuManagement();
+      alert("✅ Mahsulot muvaffaqiyatli yangilandi!");
+    }
+
+    async function deleteDishItem(dishId, dishName) {
+      if (confirm(`Rostdan ham "${dishName || 'ushbu tovarni'}" menyudan butunlay o'chirmoqchimisiz?`)) {
+        if (window.SeoulChickDB) {
+          await window.SeoulChickDB.deleteDish(dishId);
+          renderMenuManagement();
+          alert("✅ Tovar menyudan muvaffaqiyatli o'chirildi!");
+        }
+      }
+    }
+
+    async function deleteDishFromModal() {
+      const id = document.getElementById('editDishId').value;
+      const name = document.getElementById('editDishName').value;
+      if (!id) return;
+      if (confirm(`Rostdan ham "${name}" menyudan butunlay o'chirmoqchimisiz?`)) {
+        if (window.SeoulChickDB) {
+          await window.SeoulChickDB.deleteDish(id);
+          closeEditDishModal();
+          renderMenuManagement();
+          alert("✅ Tovar menyudan muvaffaqiyatli o'chirildi!");
+        }
+      }
+    }
+
+    async function restoreDishItem(dishId) {
+      if (window.SeoulChickDB) {
+        await window.SeoulChickDB.restoreDish(dishId);
+        renderMenuManagement();
+        alert("✅ Tovar menyuga qayta tiklandi!");
+      }
+    }
+
+    const deleteCustomDishItem = deleteDishItem;
+
+    // 7. FIREBASE SETTINGS FORM
+    function fillSettingsForm() {
+      const cfg = window.SeoulChickDB?.getConfig() || {};
+      document.getElementById('cfgApiKey').value = cfg.apiKey || '';
+      document.getElementById('cfgProjectId').value = cfg.projectId || '';
+      document.getElementById('cfgAuthDomain').value = cfg.authDomain || '';
+      document.getElementById('cfgStorageBucket').value = cfg.storageBucket || '';
+      document.getElementById('cfgAppId').value = cfg.appId || '';
+    }
+
+    function saveFirebaseSettings() {
+      const newCfg = {
+        apiKey: document.getElementById('cfgApiKey').value.trim(),
+        projectId: document.getElementById('cfgProjectId').value.trim(),
+        authDomain: document.getElementById('cfgAuthDomain').value.trim(),
+        storageBucket: document.getElementById('cfgStorageBucket').value.trim(),
+        appId: document.getElementById('cfgAppId').value.trim()
+      };
+
+      if (!newCfg.apiKey || !newCfg.projectId) {
+        alert("Iltimos, kamida API Key va Project ID maydonlarini to'ldiring!");
+        return;
+      }
+
+      if (window.SeoulChickDB) {
+        const success = window.SeoulChickDB.saveConfig(newCfg);
+        updateConnectionStatusUI();
+        if (success) {
+          alert("🎉 Firebase sozlamalari saqlandi va ulanish o'rnatildi!");
+          location.reload();
+        } else {
+          alert("⚠️ Sozlamalar saqlandi, lekin Firebase ulanishida xatolik yuz berdi. Kalitlarni tekshiring.");
+        }
+      }
+    }
+
+    function resetToLocalMode() {
+      if (confirm("Firebase sozlamalarini tozalab, lokal rejimga o'tmoqchimisiz?")) {
+        localStorage.removeItem('seoul_chick_firebase_config');
+        location.reload();
+      }
+    }
+
+    // 8. TABS SWITCHER
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tabOrders').style.display = 'none';
+      document.getElementById('tabMenu').style.display = 'none';
+      document.getElementById('tabSettings').style.display = 'none';
+
+      if (tabName === 'orders') {
+        document.getElementById('tabOrders').style.display = 'block';
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+      } else if (tabName === 'menu') {
+        document.getElementById('tabMenu').style.display = 'block';
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+      } else if (tabName === 'settings') {
+        document.getElementById('tabSettings').style.display = 'block';
+        document.querySelectorAll('.tab-btn')[2].classList.add('active');
+      }
+    }
+
+    // 9. MOCK TEST ORDER GENERATOR
+    function createMockOrder() {
+      const orderNum = 'SC-' + Math.floor(1000 + Math.random() * 9000);
+      const names = ["Javohir Alimov", "Madina Karimova", "Sardor Rahimov", "Dilnoza Umarova"];
+      const randomName = names[Math.floor(Math.random() * names.length)];
+      
+      const mock = {
+        orderNum: orderNum,
+        name: randomName,
+        phone: "+998 90 " + Math.floor(1000000 + Math.random() * 9000000),
+        orderType: Math.random() > 0.3 ? "delivery" : "pickup",
+        address: "Toshkent sh., Yunusobod tumani, 12-mavze, 45-uy",
+        comment: "Iltimos, salfetka va sousni ko'proq soling!",
+        payType: Math.random() > 0.5 ? "Click / Payme" : "Naqd pul",
+        status: "yangi",
+        branch: "Amir Temur",
+        items: [
+          { name: "Qanotchalar (Крылышки)", variantName: "6 dona", sauce: "Sweet Chili", qty: 2, price: 49000 },
+          { name: "Fri Italiano", variantName: "max 150gr", qty: 1, price: 49000 },
+          { name: "Coca-Cola Classic", variantName: "Butilka 0.5L", qty: 2, price: 12000 }
+        ],
+        totalPrice: 171000,
+        createdAt: new Date().toISOString()
+      };
+
+      if (window.SeoulChickDB) {
+        window.SeoulChickDB.saveOrder(mock);
+      }
+    }
+
+    // AUTO-UNLOCK IF ALREADY LOGGED IN DURING SESSION
+    document.addEventListener('DOMContentLoaded', () => {
+      if (sessionStorage.getItem('seoul_admin_authenticated') === '1') {
+        document.getElementById('lockScreen').classList.add('hidden');
+        initAdminApp();
+      }
+    });
+  </script>
+</body>
+</html>
